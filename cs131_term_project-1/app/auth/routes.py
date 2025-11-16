@@ -12,4 +12,4 @@ def login():
             return redirect(url_for("auth.login"))
         else:
             flash("Please correct the errors below.", "danger")
-    return render_template("auth/login.html", form=form)
+    return render_template("auth/login.html", form=form)    
