@@ -3,11 +3,13 @@ from .config import Config
 from .models import db
 from flask_login import LoginManager
 from .models import User
+import os
 
 login_manager = LoginManager()
 
 def create_app():
-    app = Flask(__name__, instance_relative_config=False)
+    template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
+    app = Flask(__name__, template_folder=template_dir, instance_relative_config=False)
     app.config.from_object(Config)
 
     # Init extensions
