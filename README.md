@@ -64,8 +64,6 @@ repo/
 
 ![Rendered page](screenshot.png)
 
-> The included `screenshot.png` is a placeholder image. Replace it with a real screenshot after you run the app.
-
 ## Team Roles (example)
 
 - PM: scope & acceptance
