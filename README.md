@@ -68,7 +68,7 @@ repo/
 ## UI Sketches
 
 ![Rendered page](sketch.png)
-## Team Roles (example)
+## Team Roles
 
 - Backend: app factory, models: Joshua Choy
 - Frontend: Jan David Ella
