@@ -20,4 +20,5 @@
     </div>
     {{ form.submit(class_="btn") }}
 </form>
+<p>Don't have an account? <a href="{{ url_for('auth.register') }}">Create one here</a></p>
 {% endblock %}
