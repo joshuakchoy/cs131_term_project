@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
+import os
 
-bp = Blueprint("main", __name__)
+bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
 @bp.route("/")
 def index():
@@ -8,4 +9,4 @@ def index():
 
 @bp.route("/feature")
 def feature():
-    return render_template("main/feature.html")
+    return render_template("main/features.html")
