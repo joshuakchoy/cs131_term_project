@@ -70,7 +70,6 @@ repo/
 ![Rendered page](sketch.png)
 ## Team Roles (example)
 
-- PM: scope & acceptance
-- Backend: app factory, models
-- Frontend: templates, CSS
-- QA: run acceptance checklist
+- Backend: app factory, models: Joshua Choy
+- Frontend: Jan David Ella
+- QA: run acceptance checklist: Jan David Ella, Joshua Choy
