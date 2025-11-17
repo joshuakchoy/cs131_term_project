@@ -60,6 +60,21 @@ repo/
 - Base template includes a nav and `{% block content %}`; child templates extend it.
 - README includes install/run and a screenshot of a rendered page.
 
+## MVP Features (to be implemented) 
+- Instructor can create assignments.
+- Instructor or TA can grade assignments.
+- Students can access assignments.
+- Students can submit assignments.
+- All users can have a direct line of messaging communication between each other.
+- Assignments can be graded by instructor and viewed by all users.
+- One place for notification of assignment posting and grading, new messages and announcements.
+- Grades for all courses are visible on one page.
+- Assignments for all courses are visible on one page.
+- Instructors can post announcements to the entire class.
+- Must be able to create instructor, TA, or student accounts.
+- Must be able to create a class and add students to a class.
+
+
 ## Screenshot
 
 ![Rendered page](screenshot.png)
