@@ -77,7 +77,7 @@ repo/
 
 ## Screenshot
 
-![Rendered page](screenshot.png)
+![Rendered page](login.png)
 
 
 ## UI Sketches
