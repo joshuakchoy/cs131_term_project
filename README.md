@@ -64,6 +64,10 @@ repo/
 
 ![Rendered page](screenshot.png)
 
+
+## UI Sketches
+
+![Rendered page](sketch.png)
 ## Team Roles (example)
 
 - PM: scope & acceptance
