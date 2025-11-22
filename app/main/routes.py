@@ -5,8 +5,21 @@ bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__
 
 @bp.route("/")
 def index():
-    return render_template("main/index.html")
+    return render_template("main/home.html")
 
-@bp.route("/feature")
-def feature():
-    return render_template("main/features.html")
+@bp.route("/grades")
+def grades():
+    return render_template("main/grades.html")
+
+@bp.route("/classes")
+def classes():
+    return render_template("main/classes.html")
+
+@bp.route("/assignments")
+def assignments():
+    return render_template("main/assignments.html")
+
+@bp.route("/analytics")
+def analytics():
+    return render_template("main/analytics.html")
+
