@@ -1,64 +1,24 @@
-<!--
-
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Prototype{% endblock %} · Flask Prototype</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <nav class="nav">
-        <a class="brand" href="{{ url_for('main.index') }}">Prototype</a>
-        <a href="{{ url_for('main.feature') }}">Feature</a>
-        {% if current_user.is_authenticated %}
-            <span class="nav-user">{{ current_user.username }}</span>
-            <a href="{{ url_for('auth.logout') }}">Logout</a>
-        {% else %}
-            <a href="{{ url_for('auth.login') }}">Login</a>
-            <a href="{{ url_for('auth.register') }}">Register</a>
-        {% endif %}
-    </nav>
-    <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flashes">
-            {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-            </div>
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </main>
-    <footer class="footer">
-        <small>© Prototype</small>
-    </footer>
-</body>
-</html>
-
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sidebar Menu</title>
+    <title>{% block title %}Sidebar Menu{% endblock %}</title>
     <!--Link to Google Fonts Symbol stylesheet-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <!-- Load site stylesheet from Flask static folder -->
-    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <aside class="sidebar">
         <!-- header -->
         <header class="sidebar-header">
             <a href="" class="header-logo">
-                <img src="" alt="EduNexus">
-                <span class="material-symbols-rounded">chevron_backward</span>
+                <img id="logo" src="{{ url_for('static', filename='logo.jpg') }}" alt="EduNexus">
             </a>
+            <button class="toggler">
+                <span class="material-symbols-rounded">chevron_backward</span>
+            </button>
         </header>
 
         <nav class="sidebar-nav">
@@ -68,36 +28,43 @@
                         <span class="material-symbols-rounded">home</span>
                         <span class="nav-label">Home</span>
                     </a>
+                    <span class="nav-tooltip">Home</span>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <span class="material-symbols-rounded">book</span>
                         <span class="nav-label">Classes</span> 
                     </a>
+                     <span class="nav-tooltip">Classes</span>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <span class="material-symbols-rounded">assignment</span>
                         <span class="nav-label">Assignments</span>
                     </a>
+                     <span class="nav-tooltip">Assignments</span>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <span class="material-symbols-rounded">star</span>
                         <span class="nav-label">Grades</span>
                     </a>
+                     <span class="nav-tooltip">Grades</span>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <span class="material-symbols-rounded">chart_data</span>
                         <span class="nav-label">Analytics</span>
                     </a>
+                     <span class="nav-tooltip">Analytics</span>
                 </li>
                 
             </ul>
 
         </nav>
     </aside>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
 
