@@ -18,8 +18,11 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        # Stub: no user lookup in prototype
-        return None
+        return User.query.get(int(user_id))
+
+    # Create database tables
+    with app.app_context():
+        db.create_all()
 
     # Blueprints
     from .auth.routes import bp as auth_bp
