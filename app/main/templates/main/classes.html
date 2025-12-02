@@ -5,4 +5,31 @@
 {% block content %}
     <h1>Classes</h1>
     <p>These are your classes.</p>
+
+    <div class="classes-grid-container">
+        <div class="class-card">
+            <div class="class-image-container">
+                <img src="{{ url_for('static', filename='math.png') }}" alt="class pic" class="class-img">
+                <div class="class-text-container">
+                    <h3 class="class-title">Algebra</h3>
+                </div>
+            </div>
+        </div>
+        <div class="class-card">
+            <div class="class-image-container">
+                <img src="{{ url_for('static', filename='math.png') }}" alt="class pic" class="class-img">
+                <div class="class-text-container">
+                    <h3 class="class-title">Algebra</h3>
+                </div>
+            </div>
+        </div>
+        <div class="class-card">
+            <div class="class-image-container">
+                <img src="{{ url_for('static', filename='math.png') }}" alt="class pic" class="class-img">
+                <div class="class-text-container">
+                    <h3 class="class-title">Algebra</h3>
+                </div>
+            </div>
+    </div>
+    </div>
 {% endblock %}
