@@ -35,14 +35,25 @@ body {
 .classes-grid-container {
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   column-gap: 1rem;
 }
 
 .class-card {
   min-width: 0;
+  border: none;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  border-radius: 20px;
+  text-decoration: none;
+  text-align: center;
+  background-color: white;
 }
 
+.class-card:hover {
+  background-color: #581f91;
+  color: #f5f5f5;
+}
 .class-img-container {
   position: relative;
   overflow: hidden;

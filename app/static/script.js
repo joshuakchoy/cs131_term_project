@@ -4,16 +4,18 @@ const layoutBar = document.querySelector('.sidebar-part')
 
 // Disable transitions on load
 layoutBar.classList.add('no-transition');
+sidebar.classList.add('no-transition');
 
 // Load sidebar state from localStorage on page load
 if (localStorage.getItem('sidebarCollapsed') === 'true') {
     sidebar.classList.add('collapsed');
     layoutBar.classList.add('collapsed');
-}
+} 
 
 // Re-enable transitions after layout is set
 setTimeout(() => {
     layoutBar.classList.remove('no-transition');
+    sidebar.classList.remove('no-transition');
 }, 10);
 
 if (sidebarToggler) {

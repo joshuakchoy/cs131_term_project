@@ -28,6 +28,9 @@ body {
 .sidebar.collapsed {
     width: 85px;
 }
+.sidebar.no-transition {
+  transition: none;
+}
 
 .sidebar.collapsed .sidebar-nav .nav-link .nav-label {
     opacity: 0;
