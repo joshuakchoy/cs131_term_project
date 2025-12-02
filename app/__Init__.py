@@ -15,6 +15,7 @@ def create_app():
     # Init extensions
     db.init_app(app)
     login_manager.init_app(app)
+    login_manager.login_view = "auth.login"  # Redirect to login if not authenticated
 
     @login_manager.user_loader
     def load_user(user_id):
