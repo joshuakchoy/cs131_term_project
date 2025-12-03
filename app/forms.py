@@ -22,3 +22,9 @@ class ResetPasswordForm(FlaskForm):
     password = PasswordField("New Password", validators=[DataRequired(), Length(min=6)])
     password_confirm = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password", message="Passwords must match")])
     submit = SubmitField("Reset Password")
+
+class CreateAssignmentForm(FlaskForm):
+    title = StringField("Assignment Title", validators=[DataRequired(), Length(max=128)])
+    description = StringField("Description", validators=[DataRequired(), Length(max=512)])
+    due_date = StringField("Due Date", validators=[DataRequired()])
+    submit = SubmitField("Create Assignment")
