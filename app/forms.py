@@ -12,6 +12,7 @@ class RegistrationForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
     password_confirm = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password", message="Passwords must match")])
+    role = StringField("Role (student or instructor)", validators=[DataRequired(), Length(max=32)])
     submit = SubmitField("Create Account")
 
 class CreateAssignmentForm(FlaskForm):

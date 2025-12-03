@@ -38,7 +38,7 @@ def register():
             return redirect(url_for("auth.register"))
         
         # Create new user
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, role=form.role.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()

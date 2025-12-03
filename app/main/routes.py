@@ -8,6 +8,7 @@ bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__
 @bp.route("/")
 def default():
     return render_template("main/default.html")
+
 @bp.route("/home")
 def index():
     return render_template("main/home.html")
