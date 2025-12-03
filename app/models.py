@@ -28,3 +28,12 @@ class Course(db.Model):
 
     def __repr__(self):
         return f"<Course {self.title}>"
+
+class Assignment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    due_date = db.Column(db.String(64), nullable=False)
+
+    def __repr__(self):
+        return f"<Assignment {self.title}>"
