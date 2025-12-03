@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
+from flask_login import login_required, current_user
 import os
 from ..forms import CreateAssignmentForm
 from ..models import db, Assignment
@@ -44,4 +45,14 @@ def create_assignment():
 @bp.route("/analytics")
 def analytics():
     return render_template("main/analytics.html")
+
+
+@bp.route("/teacher_portal")
+@login_required
+def teacher_portal():
+    # Only allow instructors to view the teacher portal
+    if getattr(current_user, "role", None) != "instructor":
+        flash("Access denied: instructor only.", "danger")
+        return redirect(url_for("main.index"))
+    return render_template("main/teacher_portal.html")
 

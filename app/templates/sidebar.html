@@ -68,6 +68,15 @@
             </a>
             <span class="nav-tooltip">Analytics</span>
           </li>
+          {% if current_user.is_authenticated and current_user.role == 'instructor' %}
+          <li class="nav-item">
+            <a href="{{ url_for('main.teacher_portal') }}" class="nav-link">
+              <span class="material-symbols-rounded">school</span>
+              <span class="nav-label">Teacher Portal</span>
+            </a>
+            <span class="nav-tooltip">Teacher Portal</span>
+          </li>
+          {% endif %}
           <li class="nav-item">
             <a href="auth/logout" class="nav-link">
               <span class="material-symbols-rounded">chart_data</span>
