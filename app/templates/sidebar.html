@@ -1,76 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Sidebar Menu{% endblock %}</title>
     <!--Link to Google Fonts Symbol stylesheet-->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
     <!-- Load site stylesheet from Flask static folder -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='side.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='side.css') }}"
+    />
+  </head>
+  <body>
     <aside class="sidebar">
-        <!-- header -->
-        <header class="sidebar-header">
-            <a href="" class="header-logo">
-                <img id="logo" src="{{ url_for('static', filename='logo.jpg') }}" alt="EduNexus">
+      <!-- header -->
+      <header class="sidebar-header">
+        <a href="" class="header-logo">
+          <img
+            id="logo"
+            src="{{ url_for('static', filename='logo.jpg') }}"
+            alt="EduNexus"
+          />
+        </a>
+        <button class="toggler">
+          <span class="material-symbols-rounded">chevron_backward</span>
+        </button>
+      </header>
+
+      <nav class="sidebar-nav">
+        <ul class="nav-list primary-nav">
+          <li class="nav-item">
+            <a href="/home" class="nav-link">
+              <span class="material-symbols-rounded">home</span>
+              <span class="nav-label">Home</span>
             </a>
-            <button class="toggler">
-                <span class="material-symbols-rounded">chevron_backward</span>
-            </button>
-        </header>
-
-        <nav class="sidebar-nav">
-            <ul class="nav-list primary-nav">
-                <li class="nav-item">
-                    <a href="/home" class="nav-link">
-                        <span class="material-symbols-rounded">home</span>
-                        <span class="nav-label">Home</span>
-                    </a>
-                    <span class="nav-tooltip">Home</span>
-                </li>
-                <li class="nav-item">
-                    <a href="/classes" class="nav-link">
-                        <span class="material-symbols-rounded">book</span>
-                        <span class="nav-label">Classes</span> 
-                    </a>
-                     <span class="nav-tooltip">Classes</span>
-                </li>
-                <li class="nav-item">
-                    <a href="/assignments" class="nav-link">
-                        <span class="material-symbols-rounded">assignment</span>
-                        <span class="nav-label">Assignments</span>
-                    </a>
-                     <span class="nav-tooltip">Assignments</span>
-                </li>
-                <li class="nav-item">
-                    <a href="/grades" class="nav-link">
-                        <span class="material-symbols-rounded">star</span>
-                        <span class="nav-label">Grades</span>
-                    </a>
-                     <span class="nav-tooltip">Grades</span>
-                </li>
-                <li class="nav-item">
-                    <a href="/analytics" class="nav-link">
-                        <span class="material-symbols-rounded">chart_data</span>
-                        <span class="nav-label">Analytics</span>
-                    </a>
-                     <span class="nav-tooltip">Analytics</span>
-                </li>
-                <li class="nav-item">
-                    <a href="/" class="nav-link">
-                        <span class="material-symbols-rounded">chart_data</span>
-                        <span class="nav-label">Logout</span>
-                    </a>
-                     <span class="nav-tooltip">Logout</span>
-                </li>
-            </ul>
-
-        </nav>
+            <span class="nav-tooltip">Home</span>
+          </li>
+          <li class="nav-item">
+            <a href="/classes" class="nav-link">
+              <span class="material-symbols-rounded">book</span>
+              <span class="nav-label">Classes</span>
+            </a>
+            <span class="nav-tooltip">Classes</span>
+          </li>
+          <li class="nav-item">
+            <a href="/assignments" class="nav-link">
+              <span class="material-symbols-rounded">assignment</span>
+              <span class="nav-label">Assignments</span>
+            </a>
+            <span class="nav-tooltip">Assignments</span>
+          </li>
+          <li class="nav-item">
+            <a href="/grades" class="nav-link">
+              <span class="material-symbols-rounded">star</span>
+              <span class="nav-label">Grades</span>
+            </a>
+            <span class="nav-tooltip">Grades</span>
+          </li>
+          <li class="nav-item">
+            <a href="/analytics" class="nav-link">
+              <span class="material-symbols-rounded">chart_data</span>
+              <span class="nav-label">Analytics</span>
+            </a>
+            <span class="nav-tooltip">Analytics</span>
+          </li>
+          <li class="nav-item">
+            <a href="auth/login" class="nav-link">
+              <span class="material-symbols-rounded">chart_data</span>
+              <span class="nav-label">Logout</span>
+            </a>
+            <span class="nav-tooltip">Logout</span>
+          </li>
+        </ul>
+      </nav>
     </aside>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
+  </body>
 </html>
-

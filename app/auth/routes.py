@@ -13,7 +13,7 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
             flash(f"Welcome back, {user.username}!", "success")
@@ -51,4 +51,4 @@ def register():
 def logout():
     logout_user()
     flash("You have been logged out.", "info")
-    return redirect(url_for("main.index"))
+    return redirect(url_for("auth.login"))

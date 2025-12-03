@@ -15,6 +15,7 @@ class User(db.Model, UserMixin):
     # relationships
     courses_taught = db.relationship('Course', back_populates='instructor', lazy=True)
     courses_enrolled = db.relationship('Enrollment', back_populates='student', lazy=True)
+    submissions = db.relationship('Submission', back_populates='student', lazy=True)
 
     def set_password(self, password):
         """Hash and set the user's password"""
