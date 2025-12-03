@@ -7,7 +7,7 @@ bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__
 
 @bp.route("/")
 def default():
-    return render_template("main/default.html")
+    return redirect(url_for("auth.login"))
 
 @bp.route("/home")
 def index():
