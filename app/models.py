@@ -36,8 +36,8 @@ class Course(db.Model):
 
     # relationships
     instructor = db.relationship('User', back_populates='courses_taught')
-    assignments = db.relationship('Assignment', back_populates='course', lazy=True)
-    enrollments = db.relationship('Enrollment', back_populates='course', lazy=True)
+    assignments = db.relationship('Assignment', back_populates='course', lazy=True, cascade="all, delete-orphan")
+    enrollments = db.relationship('Enrollment', back_populates='course', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Course {self.title}>"
