@@ -1,7 +1,7 @@
-<<<<<<<<< Temporary merge branch 1
+
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required
-=========
+
 import os
 from ..forms import CreateAssignmentForm
 from ..models import db, Assignment
