@@ -22,6 +22,10 @@ def classes():
 def assignments():
     return render_template("main/assignments.html")
 
+@bp.route("/create_assignment")
+def create_assignment():
+    return render_template("main/create_assignment.html")
+
 @bp.route("/analytics")
 def analytics():
     return render_template("main/analytics.html")
