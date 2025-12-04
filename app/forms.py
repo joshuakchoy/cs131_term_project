@@ -29,6 +29,5 @@ class CreateCourseForm(FlaskForm):
     submit = SubmitField("Create Course")
 
 class EnrollStudentForm(FlaskForm):
-    """Form to add a student to a course by username or email"""
     student_identifier = StringField("Student Username or Email", validators=[DataRequired(), Length(min=3, max=120)])
     submit = SubmitField("Add Student")

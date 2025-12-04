@@ -53,6 +53,7 @@ def create_assignment():
 @bp.route("/create_course", methods=["GET", "POST"])
 def create_course():
     form = CreateCourseForm()
+
     if form.validate_on_submit():
         course = Course(
             title=form.name.data,
@@ -78,7 +79,12 @@ def teacher_portal():
     if getattr(current_user, "role", None) != "instructor":
         flash("Access denied: instructor only.", "danger")
         return redirect(url_for("main.index"))
-    return render_template("main/teacher_portal.html")
+    
+    # Get all students and courses taught by the instructor
+    students = User.query.filter_by(role="student").all()
+    courses = Course.query.filter_by(teacher=current_user.id).all()
+    form = EnrollStudentForm()
+    return render_template("main/teacher_portal.html", students=students, courses=courses, form=form)
 
 
 @bp.route("/course/<int:course_id>")
@@ -121,24 +127,24 @@ def enroll_student(course_id):
         
         if not student:
             flash("Student not found.", "danger")
-            return redirect(url_for("main.view_course", course_id=course_id))
+            return redirect(url_for("main.teacher_portal"))
         
         if student.role != "student":
             flash("This user is not a student.", "danger")
-            return redirect(url_for("main.view_course", course_id=course_id))
+            return redirect(url_for("main.teacher_portal"))
         
         # Check if student is already enrolled
         existing = Enrollment.query.filter_by(student_id=student.id, course_id=course_id).first()
         if existing:
             flash(f"{student.username} is already enrolled in this course.", "info")
-            return redirect(url_for("main.view_course", course_id=course_id))
+            return redirect(url_for("main.teacher_portal"))
         
         # Create enrollment
         enrollment = Enrollment(student_id=student.id, course_id=course_id)
         db.session.add(enrollment)
         db.session.commit()
         flash(f"{student.username} has been added to the course.", "success")
-        return redirect(url_for("main.view_course", course_id=course_id))
+        return redirect(url_for("main.teacher_portal"))
     
     flash("Form validation failed.", "danger")
     return redirect(url_for("main.view_course", course_id=course_id))
