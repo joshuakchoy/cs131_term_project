@@ -7,12 +7,18 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-class User(db.Model, UserMixin): #defines what Users must have
-    id = db.Column(db.Integer, primary_key=True) 
-    username = db.Column(db.String(64), unique=True, nullable=False) #required field
-    email = db.Column(db.String(120), unique=True, nullable=False) #required field
+class User(db.Model, UserMixin):
+    # information
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    role = db.Column(db.String(20), nullable=False) # student or instructor
     password_hash = db.Column(db.String(255), nullable=False)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # relationships
+    courses_taught = db.relationship('Course', back_populates='instructor', lazy=True)
+    courses_enrolled = db.relationship('Enrollment', back_populates='student', lazy=True)
+    submissions = db.relationship('Submission', back_populates='student', lazy=True)
 
     def set_password(self, password):
         """Hash and set the user's password"""
@@ -42,19 +48,56 @@ class User(db.Model, UserMixin): #defines what Users must have
         return f"<User {self.username}>"
 
 class Course(db.Model):
+    # information
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    teacher = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # relationships
+    instructor = db.relationship('User', back_populates='courses_taught')
+    assignments = db.relationship('Assignment', back_populates='course', lazy=True, cascade="all, delete-orphan")
+    enrollments = db.relationship('Enrollment', back_populates='course', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Course {self.title}>"
+
+class Enrollment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+
+    # relationships
+    student = db.relationship('User', back_populates='courses_enrolled')
+    course = db.relationship('Course', back_populates='enrollments')
+
+    def __repr__(self):
+        return f"<Enrollment StudentID: {self.student_id}, CourseID: {self.course_id}>"
 
 class Assignment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=True)
     due_date = db.Column(db.String(64), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
+
+    # relationships
+    course = db.relationship('Course', back_populates='assignments')
+    submissions = db.relationship('Submission', back_populates='assignment', lazy=True)
 
     def __repr__(self):
         return f"<Assignment {self.title}>"
     
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    grade = db.Column(db.Float, nullable=True)
+
+    # relationships
+    assignment = db.relationship('Assignment', back_populates='submissions')
+    student = db.relationship('User', back_populates='submissions')
+
+    def __repr__(self):
+        return f"<Submission AssignmentID: {self.assignment_id}, StudentID: {self.student_id}>"

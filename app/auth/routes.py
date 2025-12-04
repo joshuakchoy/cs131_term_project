@@ -13,8 +13,8 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data): #checks password matches password in db
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
             login_user(user)
             return redirect(url_for("main.index"))
         else:
@@ -37,7 +37,7 @@ def register():
             return redirect(url_for("auth.register"))
         
         # Create new user
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, role=form.role.data)
         user.set_password(form.password.data)
         db.session.add(user)
         try:
@@ -84,7 +84,7 @@ def forgot_password():
 @bp.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
+        return redirect(url_for("auth.login"))
     
     user = User.verify_reset_token(token)
     if not user:

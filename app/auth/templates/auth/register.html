@@ -1,38 +1,44 @@
-{% extends "registerBase.html" %}
-{% block title %}Register{% endblock %}
-{% block content %}
+{% extends "registerBase.html" %} {% block title %}Register{% endblock %} {%
+block content %}
 <h1>Create Account</h1>
 <form method="POST" novalidate>
-    {{ form.hidden_tag() }}
-    <div class="form-field">
-        {{ form.username.label }}<br>
-        {{ form.username(size=32, class_="input") }}
-        {% for err in form.username.errors %}
-            <div class="error">{{ err }}</div>
-        {% endfor %}
-    </div>
-    <div class="form-field">
-        {{ form.email.label }}<br>
-        {{ form.email(size=32, class_="input") }}
-        {% for err in form.email.errors %}
-            <div class="error">{{ err }}</div>
-        {% endfor %}
-    </div>
-    <div class="form-field">
-        {{ form.password.label }}<br>
-        {{ form.password(size=32, class_="input") }}
-        {% for err in form.password.errors %}
-            <div class="error">{{ err }}</div>
-        {% endfor %}
-    </div>
-    <div class="form-field">
-        {{ form.password_confirm.label }}<br>
-        {{ form.password_confirm(size=32, class_="input") }}
-        {% for err in form.password_confirm.errors %}
-            <div class="error">{{ err }}</div>
-        {% endfor %}
-    </div>
-    {{ form.submit(class_="btn") }}
+  {{ form.hidden_tag() }}
+  <div class="form-field">
+    {{ form.username.label }}<br />
+    {{ form.username(size=32, class_="input") }} {% for err in
+    form.username.errors %}
+    <div class="error">{{ err }}</div>
+    {% endfor %}
+  </div>
+  <div class="form-field">
+    {{ form.email.label }}<br />
+    {{ form.email(size=32, class_="input") }} {% for err in form.email.errors %}
+    <div class="error">{{ err }}</div>
+    {% endfor %}
+  </div>
+  <div class="form-field">
+    {{ form.password.label }}<br />
+    {{ form.password(size=32, class_="input") }} {% for err in
+    form.password.errors %}
+    <div class="error">{{ err }}</div>
+    {% endfor %}
+  </div>
+  <div class="form-field">
+    {{ form.password_confirm.label }}<br />
+    {{ form.password_confirm(size=32, class_="input") }} {% for err in
+    form.password_confirm.errors %}
+    <div class="error">{{ err }}</div>
+    {% endfor %}
+  </div>
+  <div class="form-field">
+    {{ form.role.label }}<br />
+    {{ form.role(size=32, class_="input") }} {% for err in form.role.errors %}
+    <div class="error">{{ err }}</div>
+    {% endfor %}
+  </div>
+  {{ form.submit(class_="btn") }}
 </form>
-<p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a></p>
+<p>
+  Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>
+</p>
 {% endblock %}
