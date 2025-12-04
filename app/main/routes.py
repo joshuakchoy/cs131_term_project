@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
 import os
-from ..forms import CreateAssignmentForm
-from ..models import db, Assignment
+from ..forms import CreateAssignmentForm, CreateCourseForm
+from ..models import db, Assignment, Course
 
 bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
@@ -41,6 +41,21 @@ def create_assignment():
         flash("Assignment created successfully!", "success")
         return redirect(url_for("main.assignments"))
     return render_template("main/create_assignment.html", form=form)
+
+@bp.route("/create_course", methods=["GET", "POST"])
+def create_course():
+    form = CreateCourseForm()
+    if form.validate_on_submit():
+        course = Course(
+            course_name=form.course_name.data,
+            course_code=form.course_code.data,
+            course_description=form.course_description.data
+        )
+        db.session.add(course)
+        db.session.commit()
+        flash("Course created successfully!", "success")
+        return redirect(url_for("main.classes"))
+    return render_template("main/create_course.html", form=form)
 
 @bp.route("/analytics")
 def analytics():

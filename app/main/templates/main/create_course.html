@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block title %}Create a Course{% endblock %} {%
+block content %}
+<h1>Create a Course</h1>
+<p>Fill out the form below to create a new course.</p>
+<form method="POST" action="">
+  {{ form.hidden_tag() }}
+  <p>
+    {{ form.name.label }}<br />
+    {{ form.name(size=32) }}<br />
+    {% for error in form.name.errors %}
+    <span style="color: red">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.code.label }}<br />
+    {{ form.code(size=32) }}<br />
+    {% for error in form.code.errors %}
+    <span style="color: red">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.description.label }}<br />
+    {{ form.description(rows=4, cols=32) }}<br />
+    {% for error in form.description.errors %}
+    <span style="color: red">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>{{ form.submit() }}</p>
+
+  {% endblock %}
+</form>

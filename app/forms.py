@@ -20,3 +20,9 @@ class CreateAssignmentForm(FlaskForm):
     description = StringField("Description", validators=[DataRequired(), Length(max=512)])
     due_date = StringField("Due Date", validators=[DataRequired()])
     submit = SubmitField("Create Assignment")
+
+class CreateCourseForm(FlaskForm):
+    name = StringField("Course Name", validators=[DataRequired(), Length(max=128)])
+    code = StringField("Course Code", validators=[DataRequired(), Length(max=32)])
+    description = StringField("Course Description", validators=[DataRequired(), Length(max=512)])
+    submit = SubmitField("Create Course")
