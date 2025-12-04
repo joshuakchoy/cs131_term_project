@@ -19,8 +19,16 @@ def grades():
     return render_template("main/grades.html")
 
 @bp.route("/classes")
+@login_required
 def classes():
-    return render_template("main/classes.html")
+    if current_user.role == "instructor":
+        # Show courses taught by this instructor
+        courses = Course.query.filter_by(teacher=current_user.id).all()
+    else:
+        # Show courses enrolled by this student
+        enrollments = Enrollment.query.filter_by(student_id=current_user.id).all()
+        courses = [e.course for e in enrollments]
+    return render_template("main/classes.html", courses=courses)
 
 @bp.route("/assignments")
 def assignments():
