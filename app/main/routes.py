@@ -36,13 +36,34 @@ def assignments():
     return render_template("main/assignments.html", assignments=assignments)
 
 @bp.route("/create_assignment", methods=["GET", "POST"])
+@login_required
 def create_assignment():
+    # only instructors can create assignments
+    if getattr(current_user, "role", None) != "instructor":
+        flash("Access denied: instructors only.", "danger")
+        return redirect(url_for("main.index"))
+
     form = CreateAssignmentForm()
+    # Populate course choices with courses owned by the current user (instructor)
+    courses = Course.query.filter_by(teacher=current_user.id).all()
+    form.course_id.choices = [(c.id, c.title) for c in courses]
+
+    if not form.course_id.choices:
+        flash("You don't have any courses yet. Create a course first.", "info")
+
     if form.validate_on_submit():
+        # convert date object to ISO string for storing in the String column
+        due_val = form.due_date.data
+        if hasattr(due_val, "strftime"):
+            due_str = due_val.strftime("%Y-%m-%d")
+        else:
+            due_str = due_val
+
         assignment = Assignment(
             title=form.title.data,
             description=form.description.data,
-            due_date=form.due_date.data
+            due_date=due_str,
+            course_id=form.course_id.data
         )
         db.session.add(assignment)
         db.session.commit()
@@ -51,7 +72,14 @@ def create_assignment():
     return render_template("main/create_assignment.html", form=form)
 
 @bp.route("/create_course", methods=["GET", "POST"])
+@bp.route("/create_course", methods=["GET", "POST"])
+@login_required
 def create_course():
+    # only instructors can create courses
+    if getattr(current_user, "role", None) != "instructor":
+        flash("Access denied: instructors only.", "danger")
+        return redirect(url_for("main.index"))
+
     form = CreateCourseForm()
 
     if form.validate_on_submit():
@@ -101,9 +129,10 @@ def view_course(course_id):
     # Get all enrolled students
     enrollments = Enrollment.query.filter_by(course_id=course_id).all()
     students = [e.student for e in enrollments]
+    assignments = Assignment.query.filter_by(course_id=course_id).all()
     
     form = EnrollStudentForm()
-    return render_template("main/view_course.html", course=course, students=students, form=form)
+    return render_template("main/view_course.html", course=course, students=students, assignments=assignments, form=form)
 
 
 @bp.route("/course/<int:course_id>/enroll", methods=["POST"])

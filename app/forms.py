@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, SubmitField, StringField, RadioField
+from wtforms import EmailField, PasswordField, SubmitField, StringField, RadioField, SelectField
+from wtforms.fields import DateField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from app.models import User
 
@@ -19,7 +20,8 @@ class RegistrationForm(FlaskForm):
 class CreateAssignmentForm(FlaskForm):
     title = StringField("Assignment Title", validators=[DataRequired(), Length(max=128)])
     description = StringField("Description", validators=[DataRequired(), Length(max=512)])
-    due_date = StringField("Due Date", validators=[DataRequired()])
+    due_date = DateField("Due Date", format="%Y-%m-%d", validators=[DataRequired()])
+    course_id = SelectField("Course", coerce=int, validators=[DataRequired()])
     submit = SubmitField("Create Assignment")
 
 class CreateCourseForm(FlaskForm):

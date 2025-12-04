@@ -21,8 +21,15 @@ block content %}
   </p>
   <p>
     {{ form.due_date.label }}<br />
-    {{ form.due_date() }}<br />
+    {{ form.due_date(type='date') }}<br />
     {% for error in form.due_date.errors %}
+    <span style="color: red">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.course_id.label }}<br />
+    {{ form.course_id() }}<br />
+    {% for error in form.course_id.errors %}
     <span style="color: red">[{{ error }}]</span>
     {% endfor %}
   </p>

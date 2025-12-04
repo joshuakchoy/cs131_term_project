@@ -26,6 +26,23 @@ block content %}
   {% endif %}
 
   <hr />
+  <h2>Assignments</h2>
+  {% if assignments and assignments|length > 0 %}
+  <ul class="assignments-list">
+    {% for assignment in assignments %}
+    <li class="assignment-item">
+      <h3>{{ assignment.title }}</h3>
+      {% if assignment.description %}
+      <p>{{ assignment.description }}</p>
+      {% endif %}
+      <p><strong>Due:</strong> {{ assignment.due_date }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No assignments for this course yet.</p>
+  {% endif %}
+  <hr />
 
   <h2>Add a Student</h2>
   <form
