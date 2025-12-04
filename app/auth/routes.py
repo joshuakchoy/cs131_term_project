@@ -43,7 +43,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash("Account created! Please log in.", "success")
-        return redirect(url_for("main.home"))
+        return redirect(url_for("main.index"))
     return render_template("auth/register.html", form=form)
 
 @bp.route("/logout")

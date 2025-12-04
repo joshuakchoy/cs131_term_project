@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
 import os
-from ..forms import CreateAssignmentForm, CreateCourseForm
-from ..models import db, Assignment, Course
+from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm
+from ..models import db, Assignment, Course, User, Enrollment
 
 bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
@@ -47,9 +47,10 @@ def create_course():
     form = CreateCourseForm()
     if form.validate_on_submit():
         course = Course(
-            course_name=form.course_name.data,
-            course_code=form.course_code.data,
-            course_description=form.course_description.data
+            title=form.name.data,
+            code=form.code.data,
+            description=form.description.data,
+            teacher=current_user.id
         )
         db.session.add(course)
         db.session.commit()
@@ -70,4 +71,67 @@ def teacher_portal():
         flash("Access denied: instructor only.", "danger")
         return redirect(url_for("main.index"))
     return render_template("main/teacher_portal.html")
+
+
+@bp.route("/course/<int:course_id>")
+@login_required
+def view_course(course_id):
+    """View course details and manage students (instructor only)"""
+    course = Course.query.get_or_404(course_id)
+    
+    # Check if user is the instructor of this course
+    if course.teacher != current_user.id:
+        flash("You do not have permission to view this course.", "danger")
+        return redirect(url_for("main.classes"))
+    
+    # Get all enrolled students
+    enrollments = Enrollment.query.filter_by(course_id=course_id).all()
+    students = [e.student for e in enrollments]
+    
+    form = EnrollStudentForm()
+    return render_template("main/view_course.html", course=course, students=students, form=form)
+
+
+@bp.route("/course/<int:course_id>/enroll", methods=["POST"])
+@login_required
+def enroll_student(course_id):
+    """Add a student to a course"""
+    course = Course.query.get_or_404(course_id)
+    
+    # Check if user is the instructor of this course
+    if course.teacher != current_user.id:
+        flash("You do not have permission to modify this course.", "danger")
+        return redirect(url_for("main.classes"))
+    
+    form = EnrollStudentForm()
+    if form.validate_on_submit():
+        # Find student by username or email
+        student = User.query.filter(
+            (User.username == form.student_identifier.data) |
+            (User.email == form.student_identifier.data)
+        ).first()
+        
+        if not student:
+            flash("Student not found.", "danger")
+            return redirect(url_for("main.view_course", course_id=course_id))
+        
+        if student.role != "student":
+            flash("This user is not a student.", "danger")
+            return redirect(url_for("main.view_course", course_id=course_id))
+        
+        # Check if student is already enrolled
+        existing = Enrollment.query.filter_by(student_id=student.id, course_id=course_id).first()
+        if existing:
+            flash(f"{student.username} is already enrolled in this course.", "info")
+            return redirect(url_for("main.view_course", course_id=course_id))
+        
+        # Create enrollment
+        enrollment = Enrollment(student_id=student.id, course_id=course_id)
+        db.session.add(enrollment)
+        db.session.commit()
+        flash(f"{student.username} has been added to the course.", "success")
+        return redirect(url_for("main.view_course", course_id=course_id))
+    
+    flash("Form validation failed.", "danger")
+    return redirect(url_for("main.view_course", course_id=course_id))
 

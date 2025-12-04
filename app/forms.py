@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, SubmitField, StringField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
+from app.models import User
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(min=3, max=64)])
@@ -26,3 +27,8 @@ class CreateCourseForm(FlaskForm):
     code = StringField("Course Code", validators=[DataRequired(), Length(max=32)])
     description = StringField("Course Description", validators=[DataRequired(), Length(max=512)])
     submit = SubmitField("Create Course")
+
+class EnrollStudentForm(FlaskForm):
+    """Form to add a student to a course by username or email"""
+    student_identifier = StringField("Student Username or Email", validators=[DataRequired(), Length(min=3, max=120)])
+    submit = SubmitField("Add Student")

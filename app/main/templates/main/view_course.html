@@ -1,0 +1,50 @@
+{% extends "base.html" %} {% block title %}{{ course.title }}{% endblock %} {%
+block content %}
+
+<div class="course-container">
+  <h1>{{ course.title }}</h1>
+  <p>
+    <strong>Course Code:</strong> {{ course.code if course.code else "N/A" }}
+  </p>
+  {% if course.description %}
+  <p><strong>Description:</strong> {{ course.description }}</p>
+  {% endif %}
+
+  <hr />
+
+  <h2>Enrolled Students</h2>
+  {% if students and students|length > 0 %}
+  <ul class="students-list">
+    {% for student in students %}
+    <li class="student-item">
+      <strong>{{ student.username }}</strong> ({{ student.email }})
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No students enrolled in this course yet.</p>
+  {% endif %}
+
+  <hr />
+
+  <h2>Add a Student</h2>
+  <form
+    method="POST"
+    action="{{ url_for('main.enroll_student', course_id=course.id) }}"
+  >
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.student_identifier.label }}<br />
+      {{ form.student_identifier(size=40) }}<br />
+      {% for error in form.student_identifier.errors %}
+      <span style="color: red">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+  </form>
+
+  <hr />
+  <a href="{{ url_for('main.classes') }}">Back to Classes</a>
+</div>
+
+{% endblock %}
