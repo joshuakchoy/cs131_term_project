@@ -8,7 +8,7 @@
         <p>Welcome, {{ current_user.username }}</p>
     </div>
 
-    <a href="/assignments">
+    <a class="card-link" href="/assignments">
         <div class="card">
         <h2>Upcoming Assignments</h2>
         {% if assignments and assignments|length > 0 %}

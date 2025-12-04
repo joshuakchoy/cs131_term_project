@@ -80,11 +80,11 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-a {
+.card-link {
   text-decoration: none;
   color: inherit; /* keep link color same as surrounding text */
 }
 
-a:visited {
+.card-link:visited {
   color: inherit; /* prevent purple visited links */
 }
