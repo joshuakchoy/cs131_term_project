@@ -72,9 +72,9 @@ content %}
           <h3>All Students</h3>
           <p>Click "Add" to enroll a student in this course.</p>
           <div class="all-students-list">
-            {% for s in students %} {% set already = false %} {% for e in
-            course.enrollments %} {% if e.student_id == s.id %} {% set already =
-            true %} {% endif %} {% endfor %} {% if not already %}
+            {% set enrolled_ids =
+            course.enrollments|map(attribute='student_id')|list %} {% for s in
+            students %} {% if s.id not in enrolled_ids %}
             <div class="student-row">
               <span class="student-name">{{ s.username }}</span>
               <span class="student-email">{{ s.email }}</span>
@@ -381,13 +381,6 @@ content %}
     transform: scale(0.98);
   }
 
-  .btn-add:disabled {
-    background: #999;
-    cursor: not-allowed;
-    transform: scale(1);
-    opacity: 0.7;
-  }
-
   .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -430,17 +423,6 @@ content %}
       modal.style.display = "none";
     }
   }
-
-  // Disable form submission when adding a student to prevent double-submit
-  document.querySelectorAll('form[action*="/enroll"]').forEach(form => {
-    form.addEventListener('submit', function(e) {
-      const button = this.querySelector('button[type="submit"]');
-      if (button) {
-        button.disabled = true;
-        button.textContent = 'Adding...';
-      }
-    });
-  });
 
   // Close modal when clicking outside the modal-content
   window.addEventListener("click", function (event) {
