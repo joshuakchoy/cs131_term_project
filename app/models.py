@@ -57,3 +57,4 @@ class Assignment(db.Model):
 
     def __repr__(self):
         return f"<Assignment {self.title}>"
+    

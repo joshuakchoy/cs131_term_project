@@ -16,7 +16,8 @@ def default():
 @bp.route("/home")
 @login_required
 def index():
-    return render_template("main/home.html")
+    assignments = Assignment.query.order_by(Assignment.due_date).all()
+    return render_template("main/home.html", assignments=assignments)
 
 @bp.route("/grades")
 @login_required

@@ -3,6 +3,30 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Home</h1>
-    <p>This is the content of the page</p>
+    <div class="card">
+        <h1>Home</h1> 
+        <p>Welcome, {{ current_user.username }}</p>
+    </div>
+
+    <a href="/assignments">
+        <div class="card">
+        <h2>Upcoming Assignments</h2>
+        {% if assignments and assignments|length > 0 %}
+        <ul class="assignments-list">
+            {% for a in assignments %}
+            <li class="assignment-item">
+                <h3>{{ a.title }}</h3>
+                {% if a.description %}
+                <p>{{ a.description }}</p>
+                {% endif %}
+                <p><strong>Due:</strong> {{ a.due_date }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>No assignments found. Create one to get started.</p>
+        {% endif %}
+    </div>
+    </a>
+    
 {% endblock %}

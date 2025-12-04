@@ -16,7 +16,6 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data): #checks password matches password in db
             login_user(user)
-            flash(f"Welcome back, {user.username}!", "success")
             return redirect(url_for("main.index"))
         else:
             flash("Invalid email or password.", "danger")
