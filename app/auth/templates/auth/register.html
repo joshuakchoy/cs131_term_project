@@ -32,7 +32,9 @@ block content %}
   </div>
   <div class="form-field">
     {{ form.role.label }}<br />
-    {{ form.role(size=32, class_="input") }} {% for err in form.role.errors %}
+    {% for radio_field in form.role %} {{ radio_field() }} {{ radio_field.label
+    }}<br />
+    {% endfor %} {% for err in form.role.errors %}
     <div class="error">{{ err }}</div>
     {% endfor %}
   </div>

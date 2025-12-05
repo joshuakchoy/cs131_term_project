@@ -1,5 +1,435 @@
 {% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
 content %}
+
 <h1>Teacher Portal</h1>
-<p>This is the content of the page</p>
+<a href="{{ url_for('main.create_assignment') }}">Create Assignment</a>
+<a href="{{ url_for('main.create_course') }}">Create Course</a>
+
+<h2>Courses Taught</h2>
+{% if courses and courses|length > 0 %}
+<div class="courses-grid">
+  {% for course in courses %}
+  <div class="course-box">
+    <div class="course-header">
+      <h3 class="course-title">{{ course.title }}</h3>
+      <p class="course-code">{{ course.code if course.code else "N/A" }}</p>
+    </div>
+
+    <div class="course-info">
+      <div class="course-stat">
+        <span class="stat-label">Students:</span>
+        <span class="stat-value">{{ course.enrollments|length }}</span>
+      </div>
+      {% if course.description %}
+      <p class="course-description">
+        {{ course.description[:80] }}{% if course.description|length > 80
+        %}...{% endif %}
+      </p>
+      {% endif %}
+    </div>
+
+    <div class="course-actions">
+      <button
+        class="btn btn-primary btn-edit"
+        onclick="openCourseModal('modal-{{ course.id }}')"
+      >
+        ✎ Edit
+      </button>
+    </div>
+  </div>
+
+  <div id="modal-{{ course.id }}" class="modal" style="display: none">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>{{ course.title }}</h2>
+        <button
+          class="close-btn"
+          onclick="closeCourseModal('modal-{{ course.id }}')"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Enrolled Students Section -->
+        <div class="modal-section">
+          <h3>Enrolled Students</h3>
+          {% set enrolled = course.enrollments %} {% if enrolled and
+          enrolled|length > 0 %}
+          <ul class="enrolled-list">
+            {% for e in enrolled %}
+            <li>
+              <strong>{{ e.student.username }}</strong> ({{ e.student.email }})
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p>No students enrolled.</p>
+          {% endif %}
+        </div>
+
+        <div class="modal-section">
+          <h3>All Students</h3>
+          <p>Click "Add" to enroll a student in this course.</p>
+          <div class="all-students-list">
+            {% set enrolled_ids =
+            course.enrollments|map(attribute='student_id')|list %} {% for s in
+            students %} {% if s.id not in enrolled_ids %}
+            <div class="student-row">
+              <span class="student-name">{{ s.username }}</span>
+              <span class="student-email">{{ s.email }}</span>
+              <form
+                method="POST"
+                action="{{ url_for('main.enroll_student', course_id=course.id) }}"
+                style="display: inline-block"
+              >
+                {{ form.hidden_tag() }}
+                <input
+                  type="hidden"
+                  name="student_identifier"
+                  value="{{ s.username }}"
+                />
+                <button type="submit" class="btn btn-add">+ Add</button>
+              </form>
+            </div>
+            {% endif %} {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No courses found.</p>
+{% endif %}
+
+<style>
+  /* Course Grid */
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+  }
+
+  /* Course Box */
+  .course-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 24px;
+    color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .course-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .course-header {
+    flex-grow: 1;
+    margin-bottom: 16px;
+  }
+
+  .course-title {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .course-code {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.85;
+    font-weight: 500;
+  }
+
+  .course-info {
+    margin-bottom: 16px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .course-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  .stat-label {
+    opacity: 0.85;
+  }
+
+  .stat-value {
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  .course-description {
+    margin: 8px 0 0 0;
+    font-size: 13px;
+    opacity: 0.8;
+    line-height: 1.4;
+  }
+
+  .course-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-edit {
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid white;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+
+  .btn-edit:hover {
+    background: white;
+    color: #667eea;
+  }
+
+  /* Modal Styles */
+  .modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 700px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 2px solid #f0f0f0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 24px;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: white;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  .close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+
+  .modal-section {
+    margin-bottom: 28px;
+  }
+
+  .modal-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .modal-section h3 {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 8px;
+  }
+
+  .modal-section > p {
+    margin: 0 0 12px 0;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .enrolled-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .enrolled-list li {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background 0.2s ease;
+  }
+
+  .enrolled-list li:hover {
+    background: #f0f2f7;
+  }
+
+  .enrolled-list strong {
+    color: #333;
+  }
+
+  .all-students-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .student-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .student-row:hover {
+    background: #f0f2f7;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .student-name {
+    font-weight: 600;
+    color: #333;
+    min-width: 120px;
+  }
+
+  .student-email {
+    color: #999;
+    flex-grow: 1;
+    margin: 0 12px;
+    font-size: 13px;
+  }
+
+  .btn-add {
+    background: #667eea;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-add:hover {
+    background: #5568d3;
+    transform: scale(1.05);
+  }
+
+  .btn-add:active {
+    transform: scale(0.98);
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 24px;
+    border-top: 1px solid #f0f0f0;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  .btn-secondary:hover {
+    background: #e0e0e0;
+  }
+</style>
+
+<script>
+  function openCourseModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = "flex";
+    }
+  }
+
+  function closeCourseModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  // Close modal when clicking outside the modal-content
+  window.addEventListener("click", function (event) {
+    if (event.target.classList.contains("modal")) {
+      event.target.style.display = "none";
+    }
+  });
+</script>
+
 {% endblock %}

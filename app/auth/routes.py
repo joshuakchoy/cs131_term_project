@@ -40,21 +40,10 @@ def register():
         user = User(username=form.username.data, email=form.email.data, role=form.role.data)
         user.set_password(form.password.data)
         db.session.add(user)
-        try:
-            db.session.commit()
-            flash(f"Account created! Please log in with your credentials.", "success")
-            return redirect(url_for("auth.login"))
-        except Exception as e:
-            db.session.rollback()
-            flash(f"Error creating account: {str(e)}", "danger")
-            return redirect(url_for("auth.register"))
-    
-    # Show form validation errors
-    if form.is_submitted() and not form.validate():
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(f"{field}: {error}", "danger")
-    
+        db.session.commit()
+        login_user(user)
+        flash("Account created! Success!", "success")
+        return redirect(url_for("main.index"))
     return render_template("auth/register.html", form=form)
 
 @bp.route("/logout")

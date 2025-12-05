@@ -52,6 +52,7 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    code = db.Column(db.String(32), unique=True, nullable=False)
     teacher = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     # relationships
