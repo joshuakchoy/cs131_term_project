@@ -122,5 +122,63 @@ a:visited {
   transform: scale(1.02) !important;
 }
 
+.button-primary {
+  border: 5px solid #581f91;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.3s ease;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #581f91;
+  box-shadow: 2px 2px 8px rgba(88, 31, 145, 0.2);
+}
 
+.button-primary:hover{
+  transform: scale(1.02) !important;
+}
+.assignment-list {
+  list-style-type: none;
+}
+.assignment-item {
+  padding: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  border: 2px solid #000000;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.submissions-container {
+  margin-top: 20px;
+}
+
+.submission-card {
+  border: 2px solid #581f91;
+  background-color: white;
+  margin-bottom: 20px;
+}
+
+.submission-card h3 {
+  color: #581f91;
+  margin-bottom: 10px;
+}
+
+.submission-content {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.download-link {
+  color: #581f91;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.download-link:hover {
+  color: #7a2fb8;
+}
 

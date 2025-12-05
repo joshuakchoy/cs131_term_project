@@ -93,7 +93,9 @@ class Submission(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    content = db.Column(db.Text, nullable=False)
+    content = db.Column(db.Text, nullable=True)  # Optional text content
+    file_path = db.Column(db.String(255), nullable=True)  # Path to uploaded file
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
     grade = db.Column(db.Float, nullable=True)
 
     # relationships

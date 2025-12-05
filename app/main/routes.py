@@ -1,9 +1,10 @@
 
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, current_app, send_from_directory
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
 import os
-from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm
-from ..models import db, Assignment, Course, User, Enrollment
+from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm, SubmitAssignmentForm
+from ..models import db, Assignment, Course, User, Enrollment, Submission
 
 bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
@@ -15,7 +16,16 @@ def default():
 @bp.route("/home")
 @login_required
 def index():
-    assignments = Assignment.query.order_by(Assignment.due_date).all()
+    if current_user.role == 'student':
+        # Get course IDs the student is enrolled in
+        enrolled_course_ids = [enrollment.course_id for enrollment in current_user.courses_enrolled]
+        # Filter assignments to only those courses
+        assignments = Assignment.query.filter(Assignment.course_id.in_(enrolled_course_ids)).order_by(Assignment.due_date).all()
+    else:
+        # Instructors see all assignments (or could filter by courses they teach)
+        taught_course_ids = [course.id for course in current_user.courses_taught]
+        assignments = Assignment.query.filter(Assignment.course_id.in_(taught_course_ids)).order_by(Assignment.due_date).all()
+    
     return render_template("main/home.html", assignments=assignments)
 
 @bp.route("/grades")
@@ -38,7 +48,16 @@ def classes():
 @bp.route("/assignments")
 @login_required
 def assignments():
-    assignments = Assignment.query.order_by(Assignment.id.desc()).all()
+    if current_user.role == 'student':
+        # Get course IDs the student is enrolled in
+        enrolled_course_ids = [enrollment.course_id for enrollment in current_user.courses_enrolled]
+        # Filter assignments to only those courses
+        assignments = Assignment.query.filter(Assignment.course_id.in_(enrolled_course_ids)).order_by(Assignment.due_date).all()
+    else:
+        # Instructors see all assignments (or could filter by courses they teach)
+        taught_course_ids = [course.id for course in current_user.courses_taught]
+        assignments = Assignment.query.filter(Assignment.course_id.in_(taught_course_ids)).order_by(Assignment.due_date).all()
+    
     return render_template("main/assignments.html", assignments=assignments)
 
 @bp.route("/create_assignment", methods=["GET", "POST"])
@@ -190,4 +209,91 @@ def enroll_student(course_id):
     
     flash("Form validation failed.", "danger")
     return redirect(url_for("main.view_course", course_id=course_id))
+
+@bp.route("/submit_assignment/<int:assignment_id>", methods=["GET", "POST"]) #lets you submit a PDF for an assignment
+@login_required
+def submit_assignment(assignment_id):
+    assignment = Assignment.query.get_or_404(assignment_id)
+    form = SubmitAssignmentForm()
+    
+    if form.validate_on_submit():
+        # Check if student already submitted
+        existing = Submission.query.filter_by(
+            assignment_id=assignment_id,
+            student_id=current_user.id
+        ).first()
+        
+        # Handle file upload
+        file_path = None
+        unique_filename = None
+        if form.file.data:
+            file = form.file.data
+            filename = secure_filename(file.filename)
+            # Create unique filename: userid_assignmentid_filename
+            unique_filename = f"{current_user.id}_{assignment_id}_{filename}"
+            
+            # Ensure upload folder exists
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            
+            file_path = os.path.join(upload_folder, unique_filename)
+            file.save(file_path)
+            
+            # Delete old file if resubmitting
+            if existing and existing.file_path:
+                old_file = os.path.join(upload_folder, existing.file_path)
+                if os.path.exists(old_file):
+                    os.remove(old_file)
+        
+        if existing:
+            # Update existing submission (resubmit)
+            existing.content = form.content.data
+            if unique_filename:
+                existing.file_path = unique_filename
+            from datetime import datetime
+            existing.submitted_at = datetime.utcnow()
+            db.session.commit()
+            flash("Assignment resubmitted successfully!", "success")
+        else:
+            # Create new submission
+            submission = Submission(
+                assignment_id=assignment_id,
+                student_id=current_user.id,
+                content=form.content.data,
+                file_path=unique_filename if file_path else None
+            )
+            db.session.add(submission)
+            db.session.commit()
+            flash("Assignment submitted successfully!", "success")
+        
+        return redirect(url_for("main.assignments"))
+    
+    return render_template("main/submit_assignment.html", form=form, assignment=assignment)
+
+@bp.route("/download/<filename>")
+@login_required
+def download_file(filename):
+    """Download submitted assignment file"""
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    return send_from_directory(upload_folder, filename, as_attachment=True)
+
+@bp.route("/view_submissions/<int:assignment_id>")
+@login_required
+def view_submissions(assignment_id):
+    """View all submissions for an assignment (teachers only)"""
+    if current_user.role != "instructor":
+        flash("Access denied: instructors only.", "danger")
+        return redirect(url_for("main.assignments"))
+    
+    assignment = Assignment.query.get_or_404(assignment_id)
+    
+    # Verify teacher owns this assignment's course
+    if assignment.course.teacher != current_user.id:
+        flash("You can only view submissions for your own courses.", "danger")
+        return redirect(url_for("main.assignments"))
+    
+    # Get all submissions for this assignment with student info
+    submissions = Submission.query.filter_by(assignment_id=assignment_id).all()
+    
+    return render_template("main/view_submissions.html", assignment=assignment, submissions=submissions)
 

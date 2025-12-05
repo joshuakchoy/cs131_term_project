@@ -15,6 +15,11 @@ content %}
     <p>{{ a.description }}</p>
     {% endif %}
     <p><strong>Due:</strong> {{ a.due_date }}</p>
+    {% if current_user.role == 'student' %}
+    <a href="{{ url_for('main.submit_assignment', assignment_id=a.id) }}" class="button-primary">Submit Assignment</a>
+    {% elif current_user.role == 'instructor' %}
+    <a href="{{ url_for('main.view_submissions', assignment_id=a.id) }}" class="teacher-btn">View Submissions</a>
+    {% endif %}
   </li>
   {% endfor %}
 </ul>

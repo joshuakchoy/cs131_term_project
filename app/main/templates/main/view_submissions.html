@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}View Submissions{% endblock %}
+
+{% block content %}
+<h1>Submissions for: {{ assignment.title }}</h1>
+<p><strong>Due Date:</strong> {{ assignment.due_date }}</p>
+<p><strong>Course:</strong> {{ assignment.course.title }}</p>
+
+{% if submissions and submissions|length > 0 %}
+<div class="submissions-container">
+    <h2>Student Submissions ({{ submissions|length }})</h2>
+    
+    {% for submission in submissions %}
+    <div class="card submission-card">
+        <h3>{{ submission.student.username }} ({{ submission.student.email }})</h3>
+        <p><strong>Submitted:</strong> {{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        
+        {% if submission.content %}
+        <div class="submission-content">
+            <strong>Notes:</strong>
+            <p>{{ submission.content }}</p>
+        </div>
+        {% endif %}
+        
+        {% if submission.file_path %}
+        <p>
+            <strong>File:</strong> 
+            <a href="{{ url_for('main.download_file', filename=submission.file_path) }}" class="download-link">
+                📎 {{ submission.file_path }}
+            </a>
+        </p>
+        {% endif %}
+        
+        {% if submission.grade %}
+        <p><strong>Grade:</strong> {{ submission.grade }}</p>
+        {% else %}
+        <p><em>Not graded yet</em></p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No submissions yet.</p>
+{% endif %}
+
+<a href="{{ url_for('main.assignments') }}" class="btn">Back to Assignments</a>
+{% endblock %}

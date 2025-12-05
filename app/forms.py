@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, SubmitField, StringField, RadioField, SelectField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import EmailField, PasswordField, SubmitField, StringField, RadioField, SelectField, TextAreaField
 from wtforms.fields import DateField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from app.models import User
@@ -42,3 +43,8 @@ class CreateCourseForm(FlaskForm):
 class EnrollStudentForm(FlaskForm):
     student_identifier = StringField("Student Username or Email", validators=[DataRequired(), Length(min=3, max=120)])
     submit = SubmitField("Add Student")
+
+class SubmitAssignmentForm(FlaskForm):
+    content = TextAreaField("Submission Notes (optional)")
+    file = FileField("Upload File", validators=[FileAllowed(['pdf', 'doc', 'docx', 'txt', 'zip', 'py', 'java', 'cpp', 'c'], 'Only documents and code files allowed!')])
+    submit = SubmitField("Submit Assignment")
