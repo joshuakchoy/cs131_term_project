@@ -2,7 +2,9 @@
 content %}
 <h1>Assignments</h1>
 <p>These are your assignments.</p>
-<a href="{{ url_for('main.create_assignment') }}">Create Assignment</a>
+{% if current_user.is_teacher %}
+  <a class="teacher-btn" href="{{ url_for('main.create_assignment') }}">Create Assignment</a>
+{% endif %}
 
 {% if assignments and assignments|length > 0 %}
 <ul class="assignments-list">

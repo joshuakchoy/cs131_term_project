@@ -89,6 +89,12 @@ def create_course():
     form = CreateCourseForm()
 
     if form.validate_on_submit():
+        # Check if course code already exists
+        existing = Course.query.filter_by(code=form.code.data).first()
+        if existing:
+            flash(f"Course code '{form.code.data}' already exists.", "danger")
+            return render_template("main/create_course.html", form=form)
+        
         course = Course(
             title=form.name.data,
             code=form.code.data,
@@ -122,7 +128,7 @@ def teacher_portal():
     return render_template("main/teacher_portal.html", students=students, courses=courses, form=form)
 
 
-@bp.route("/course/<int:course_id>")
+@bp.route("/course/<int:course_id>") #specific course details
 @login_required
 def view_course(course_id):
     """View course details and manage students (instructor only)"""

@@ -37,6 +37,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   column-gap: 1rem;
+  text-decoration: none;
 }
 
 .class-card {
@@ -88,3 +89,38 @@ body {
 .card-link:visited {
   color: inherit; /* prevent purple visited links */
 }
+
+.class-text-container {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Global link styles - prevent color change on visit */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:visited {
+  color: inherit;
+}
+
+.teacher-btn {
+  border: 5px solid #581f91;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.3s ease;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #581f91;
+  box-shadow: 2px 2px 8px rgba(88, 31, 145, 0.2);
+}
+
+.teacher-btn:hover{
+  transform: scale(1.02) !important;
+}
+
+
+

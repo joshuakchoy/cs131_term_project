@@ -2,8 +2,8 @@
 content %}
 
 <h1>Teacher Portal</h1>
-<a href="{{ url_for('main.create_assignment') }}">Create Assignment</a>
-<a href="{{ url_for('main.create_course') }}">Create Course</a>
+<a class="teacher-btn" href="{{ url_for('main.create_assignment') }}">Create Assignment</a>
+<a class="teacher-btn" href="{{ url_for('main.create_course') }}">Create Course</a>
 
 <h2>Courses Taught</h2>
 {% if courses and courses|length > 0 %}
@@ -30,7 +30,7 @@ content %}
 
     <div class="course-actions">
       <button
-        class="btn btn-primary btn-edit"
+        class="btn-primary btn-edit"
         onclick="openCourseModal('modal-{{ course.id }}')"
       >
         ✎ Edit
