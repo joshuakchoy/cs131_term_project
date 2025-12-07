@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     courses_taught = db.relationship('Course', back_populates='instructor', lazy=True)
     courses_enrolled = db.relationship('Enrollment', back_populates='student', lazy=True)
     submissions = db.relationship('Submission', back_populates='student', lazy=True)
+    ta_assignments = db.relationship('TAAssignment', back_populates='ta', lazy=True)
 
     def set_password(self, password):
         """Hash and set the user's password"""
@@ -104,3 +105,49 @@ class Submission(db.Model):
 
     def __repr__(self):
         return f"<Submission AssignmentID: {self.assignment_id}, StudentID: {self.student_id}>"
+
+class TAAssignment(db.Model):
+    """Tracks which TAs are assigned to which courses"""
+    id = db.Column(db.Integer, primary_key=True)
+    ta_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    
+    # relationships
+    ta = db.relationship('User', back_populates='ta_assignments')
+    course = db.relationship('Course', backref='ta_assignments')
+    
+    def __repr__(self):
+        return f"<TAAssignment TA: {self.ta_id}, Course: {self.course_id}>"
+
+class Message(db.Model):
+    """One-on-one messages between users"""
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    subject = db.Column(db.String(128), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    read = db.Column(db.Boolean, default=False)
+    
+    # relationships
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='messages_sent')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='messages_received')
+    
+    def __repr__(self):
+        return f"<Message from {self.sender_id} to {self.recipient_id}>"
+
+class Announcement(db.Model):
+    """Course-wide announcements from instructors/TAs"""
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(128), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # relationships
+    course = db.relationship('Course', backref='announcements')
+    author = db.relationship('User', backref='announcements_posted')
+    
+    def __repr__(self):
+        return f"<Announcement {self.title} in Course {self.course_id}>"

@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Manage TAs - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Manage TAs for {{ course.title }}</h1>
+    <p class="course-code">Course Code: {{ course.code }}</p>
+    
+    <div class="ta-section">
+        <h2>Assign New TA</h2>
+        <form method="POST" class="ta-form">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                {{ form.ta_id.label }}
+                {{ form.ta_id(class="form-control") }}
+                {% if form.ta_id.errors %}
+                    <div class="error-messages">
+                        {% for error in form.ta_id.errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            {{ form.course_id(style="display: none;") }}
+            
+            <div class="form-group">
+                {{ form.submit(class="button-primary") }}
+            </div>
+        </form>
+    </div>
+    
+    <div class="assigned-tas-section">
+        <h2>Currently Assigned TAs</h2>
+        
+        {% if assigned_tas %}
+            <div class="ta-list">
+                {% for ta in assigned_tas %}
+                    <div class="ta-card card">
+                        <div class="ta-info">
+                            <h3>{{ ta.username }}</h3>
+                            <p class="ta-email">{{ ta.email }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('main.remove_ta', course_id=course.id, ta_id=ta.id) }}" style="display: inline;">
+                            <button type="submit" class="button-danger" onclick="return confirm('Are you sure you want to remove this TA from the course?')">
+                                Remove
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-tas">No TAs assigned to this course yet.</p>
+        {% endif %}
+    </div>
+    
+    <div class="navigation-buttons">
+        <a href="{{ url_for('main.view_course', course_id=course.id) }}" class="button-secondary">Back to Course</a>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.course-code {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 30px;
+}
+
+.ta-section, .assigned-tas-section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ta-section h2, .assigned-tas-section h2 {
+    color: #581f91;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.ta-form .form-group {
+    margin-bottom: 20px;
+}
+
+.ta-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #581f91;
+    box-shadow: 0 0 0 2px rgba(88, 31, 145, 0.1);
+}
+
+.ta-list {
+    display: grid;
+    gap: 15px;
+}
+
+.ta-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border: 1px solid #e0e0e0;
+}
+
+.ta-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(88, 31, 145, 0.2);
+}
+
+.ta-info h3 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.ta-email {
+    margin: 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.button-primary, .button-secondary, .button-danger {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.button-primary {
+    background: #581f91;
+    color: white;
+}
+
+.button-primary:hover {
+    background: #6f2bb0;
+    transform: scale(1.05);
+}
+
+.button-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.button-secondary:hover {
+    background: #5a6268;
+}
+
+.button-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.button-danger:hover {
+    background: #c82333;
+}
+
+.no-tas {
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+.navigation-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.error-messages {
+    margin-top: 5px;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+</style>
+{% endblock %}

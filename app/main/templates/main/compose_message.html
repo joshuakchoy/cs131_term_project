@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Compose Message{% endblock %}
+
+{% block content %}
+<h1>Compose Message</h1>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    <div class="form-group">
+        {{ form.recipient_id.label }}<br>
+        {{ form.recipient_id(class="form-control") }}<br>
+        {% for error in form.recipient_id.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    
+    <div class="form-group">
+        {{ form.subject.label }}<br>
+        {{ form.subject(size=50, class="form-control") }}<br>
+        {% for error in form.subject.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    
+    <div class="form-group">
+        {{ form.body.label }}<br>
+        {{ form.body(rows=10, cols=50, class="form-control") }}<br>
+        {% for error in form.body.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </div>
+    
+    <p>{{ form.submit(class="btn") }}</p>
+</form>
+
+<a href="{{ url_for('main.messages') }}">Back to Inbox</a>
+{% endblock %}

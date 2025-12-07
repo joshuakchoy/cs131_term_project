@@ -61,7 +61,46 @@ block content %}
   </form>
 
   <hr />
-  <a href="{{ url_for('main.classes') }}">Back to Classes</a>
+  <div class="course-actions">
+    <a href="{{ url_for('main.manage_tas', course_id=course.id) }}" class="button-ta">Manage TAs</a>
+    <a href="{{ url_for('main.classes') }}" class="button-back">Back to Classes</a>
+  </div>
 </div>
+
+<style>
+.course-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.button-ta, .button-back {
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.button-ta {
+    background: #581f91;
+    color: white;
+}
+
+.button-ta:hover {
+    background: #6f2bb0;
+    transform: scale(1.05);
+}
+
+.button-back {
+    background: #6c757d;
+    color: white;
+}
+
+.button-back:hover {
+    background: #5a6268;
+}
+</style>
 
 {% endblock %}

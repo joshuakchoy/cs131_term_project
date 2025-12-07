@@ -182,3 +182,121 @@ a:visited {
   color: #7a2fb8;
 }
 
+/* Messaging styles */
+.message-nav {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.messages-container {
+  margin-top: 20px;
+}
+
+.message-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.message-card:hover {
+  box-shadow: 0 4px 12px rgba(88, 31, 145, 0.3);
+}
+
+.message-card.unread {
+  border-left: 5px solid #581f91;
+  background-color: #f0e6f7;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.message-from, .message-to {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85em;
+  color: #999;
+}
+
+.message-time {
+  font-style: italic;
+}
+
+.read-status {
+  color: #4CAF50;
+}
+
+.unread-status {
+  color: #999;
+}
+
+.message-details {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.message-body {
+  padding: 20px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.message-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.announcements-container {
+  margin-top: 20px;
+}
+
+.announcement-card {
+  border-left: 4px solid #581f91;
+}
+
+.announcement-meta {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.announcement-meta p {
+  margin: 5px 0;
+}
+
+.announcement-content {
+  padding: 15px 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #581f91;
+}
+

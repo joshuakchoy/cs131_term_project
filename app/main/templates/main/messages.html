@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Inbox{% endblock %}
+
+{% block content %}
+<h1>Messages</h1>
+<p>You have {{ unread_count }} unread message(s).</p>
+
+<div class="message-nav">
+    <a href="{{ url_for('main.compose_message') }}" class="btn">Compose New Message</a>
+    <a href="{{ url_for('main.sent_messages') }}" class="btn">Sent Messages</a>
+    <a href="{{ url_for('main.announcements') }}" class="btn">View Announcements</a>
+</div>
+
+{% if messages and messages|length > 0 %}
+<div class="messages-container">
+    <h2>Inbox</h2>
+    {% for msg in messages %}
+    <div class="card message-card {% if not msg.read %}unread{% endif %}">
+        <a href="{{ url_for('main.view_message', message_id=msg.id) }}" style="text-decoration: none; color: inherit;">
+            <div class="message-header">
+                <strong>{% if not msg.read %}🔵 {% endif %}{{ msg.subject }}</strong>
+                <span class="message-from">From: {{ msg.sender.username }}</span>
+            </div>
+            <div class="message-meta">
+                <span class="message-time">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No messages in your inbox.</p>
+{% endif %}
+
+{% endblock %}

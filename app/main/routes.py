@@ -3,8 +3,8 @@ from flask import Blueprint, render_template, flash, redirect, url_for, current_
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import os
-from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm, SubmitAssignmentForm
-from ..models import db, Assignment, Course, User, Enrollment, Submission
+from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm, SubmitAssignmentForm, ComposeMessageForm, AnnouncementForm, AssignTAForm
+from ..models import db, Assignment, Course, User, Enrollment, Submission, Message, Announcement, TAAssignment
 
 bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
@@ -21,10 +21,14 @@ def index():
         enrolled_course_ids = [enrollment.course_id for enrollment in current_user.courses_enrolled]
         # Filter assignments to only those courses
         assignments = Assignment.query.filter(Assignment.course_id.in_(enrolled_course_ids)).order_by(Assignment.due_date).all()
-    else:
-        # Instructors see all assignments (or could filter by courses they teach)
+    elif current_user.role == 'instructor':
+        # Instructors see assignments from courses they teach
         taught_course_ids = [course.id for course in current_user.courses_taught]
         assignments = Assignment.query.filter(Assignment.course_id.in_(taught_course_ids)).order_by(Assignment.due_date).all()
+    else:  # TA
+        # TAs see assignments from courses they are assigned to
+        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
+        assignments = Assignment.query.filter(Assignment.course_id.in_(ta_course_ids)).order_by(Assignment.due_date).all()
     
     return render_template("main/home.html", assignments=assignments)
 
@@ -39,10 +43,14 @@ def classes():
     if current_user.role == "instructor":
         # Show courses taught by this instructor
         courses = Course.query.filter_by(teacher=current_user.id).all()
-    else:
+    elif current_user.role == "student":
         # Show courses enrolled by this student
         enrollments = Enrollment.query.filter_by(student_id=current_user.id).all()
         courses = [e.course for e in enrollments]
+    else:  # TA
+        # Show courses the TA is assigned to
+        ta_assignments = TAAssignment.query.filter_by(ta_id=current_user.id).all()
+        courses = [ta_assignment.course for ta_assignment in ta_assignments]
     return render_template("main/classes.html", courses=courses)
 
 @bp.route("/assignments")
@@ -53,10 +61,14 @@ def assignments():
         enrolled_course_ids = [enrollment.course_id for enrollment in current_user.courses_enrolled]
         # Filter assignments to only those courses
         assignments = Assignment.query.filter(Assignment.course_id.in_(enrolled_course_ids)).order_by(Assignment.due_date).all()
-    else:
-        # Instructors see all assignments (or could filter by courses they teach)
+    elif current_user.role == 'instructor':
+        # Instructors see assignments from courses they teach
         taught_course_ids = [course.id for course in current_user.courses_taught]
         assignments = Assignment.query.filter(Assignment.course_id.in_(taught_course_ids)).order_by(Assignment.due_date).all()
+    else:  # TA
+        # TAs see assignments from courses they are assigned to
+        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
+        assignments = Assignment.query.filter(Assignment.course_id.in_(ta_course_ids)).order_by(Assignment.due_date).all()
     
     return render_template("main/assignments.html", assignments=assignments)
 
@@ -170,7 +182,7 @@ def view_course(course_id):
 @bp.route("/course/<int:course_id>/enroll", methods=["POST"])
 @login_required
 def enroll_student(course_id):
-    """Add a student to a course"""
+    """Add a student/TA to a course"""
     course = Course.query.get_or_404(course_id)
     
     # Check if user is the instructor of this course
@@ -180,18 +192,14 @@ def enroll_student(course_id):
     
     form = EnrollStudentForm()
     if form.validate_on_submit():
-        # Find student by username or email
+        # Find student/TA by username or email
         student = User.query.filter(
             (User.username == form.student_identifier.data) |
             (User.email == form.student_identifier.data)
         ).first()
         
-        if not student:
-            flash("Student not found.", "danger")
-            return redirect(url_for("main.teacher_portal"))
-        
-        if student.role != "student":
-            flash("This user is not a student.", "danger")
+        if student.role == "instructor":
+            flash("User is not student/TA", "danger")
             return redirect(url_for("main.teacher_portal"))
         
         # Check if student is already enrolled
@@ -209,6 +217,75 @@ def enroll_student(course_id):
     
     flash("Form validation failed.", "danger")
     return redirect(url_for("main.view_course", course_id=course_id))
+
+@bp.route("/course/<int:course_id>/manage_tas", methods=["GET", "POST"])
+@login_required
+def manage_tas(course_id):
+    """Manage TAs assigned to a course (instructor only)"""
+    if current_user.role != 'instructor':
+        flash("Only instructors can manage TAs.", "danger")
+        return redirect(url_for("main.classes"))
+    
+    course = Course.query.get_or_404(course_id)
+    
+    # Check if user is the instructor of this course
+    if course.teacher != current_user.id:
+        flash("You do not have permission to manage TAs for this course.", "danger")
+        return redirect(url_for("main.classes"))
+    
+    form = AssignTAForm()
+    
+    # Populate TA dropdown with all TAs
+    form.ta_id.choices = [(ta.id, ta.username) for ta in User.query.filter_by(role='ta').all()]
+    form.course_id.choices = [(course.id, course.title)]
+    form.course_id.data = course.id
+    
+    if form.validate_on_submit():
+        # Check if TA is already assigned
+        existing = TAAssignment.query.filter_by(ta_id=form.ta_id.data, course_id=course_id).first()
+        if existing:
+            flash("This TA is already assigned to this course.", "info")
+        else:
+            # Create TA assignment
+            ta_assignment = TAAssignment(ta_id=form.ta_id.data, course_id=course_id)
+            db.session.add(ta_assignment)
+            db.session.commit()
+            ta = User.query.get(form.ta_id.data)
+            flash(f"{ta.username} has been assigned as a TA for this course.", "success")
+        return redirect(url_for("main.manage_tas", course_id=course_id))
+    
+    # Get currently assigned TAs
+    ta_assignments = TAAssignment.query.filter_by(course_id=course_id).all()
+    assigned_tas = [ta_assignment.ta for ta_assignment in ta_assignments]
+    
+    return render_template("main/manage_tas.html", course=course, assigned_tas=assigned_tas, ta_assignments=ta_assignments, form=form)
+
+@bp.route("/course/<int:course_id>/remove_ta/<int:ta_id>", methods=["POST"])
+@login_required
+def remove_ta(course_id, ta_id):
+    """Remove a TA from a course"""
+    if current_user.role != 'instructor':
+        flash("Only instructors can remove TAs.", "danger")
+        return redirect(url_for("main.classes"))
+    
+    course = Course.query.get_or_404(course_id)
+    
+    # Check if user is the instructor of this course
+    if course.teacher != current_user.id:
+        flash("You do not have permission to modify this course.", "danger")
+        return redirect(url_for("main.classes"))
+    
+    # Find and remove the TA assignment
+    ta_assignment = TAAssignment.query.filter_by(ta_id=ta_id, course_id=course_id).first()
+    if ta_assignment:
+        db.session.delete(ta_assignment)
+        db.session.commit()
+        ta = User.query.get(ta_id)
+        flash(f"{ta.username} has been removed as a TA from this course.", "success")
+    else:
+        flash("TA assignment not found.", "danger")
+    
+    return redirect(url_for("main.manage_tas", course_id=course_id))
 
 @bp.route("/submit_assignment/<int:assignment_id>", methods=["GET", "POST"]) #lets you submit a PDF for an assignment
 @login_required
@@ -280,20 +357,189 @@ def download_file(filename):
 @bp.route("/view_submissions/<int:assignment_id>")
 @login_required
 def view_submissions(assignment_id):
-    """View all submissions for an assignment (teachers only)"""
-    if current_user.role != "instructor":
-        flash("Access denied: instructors only.", "danger")
+    """View all submissions for an assignment (instructors and TAs only)"""
+    if current_user.role not in ["instructor", "ta"]:
+        flash("Access denied: instructors and TAs only.", "danger")
         return redirect(url_for("main.assignments"))
     
     assignment = Assignment.query.get_or_404(assignment_id)
     
-    # Verify teacher owns this assignment's course
-    if assignment.course.teacher != current_user.id:
-        flash("You can only view submissions for your own courses.", "danger")
-        return redirect(url_for("main.assignments"))
+    # Verify teacher owns this assignment's course or TA is assigned to this course
+    if current_user.role == 'instructor':
+        if assignment.course.teacher != current_user.id:
+            flash("You can only view submissions for your own courses.", "danger")
+            return redirect(url_for("main.assignments"))
+    else:  # TA
+        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
+        if assignment.course_id not in ta_course_ids:
+            flash("You can only view submissions for courses you are assigned to.", "danger")
+            return redirect(url_for("main.assignments"))
     
     # Get all submissions for this assignment with student info
     submissions = Submission.query.filter_by(assignment_id=assignment_id).all()
     
     return render_template("main/view_submissions.html", assignment=assignment, submissions=submissions)
+
+# ============= MESSAGING & COMMUNICATION ROUTES =============
+
+@bp.route("/messages")
+@login_required
+def messages():
+    """View inbox - all received messages"""
+    inbox = Message.query.filter_by(recipient_id=current_user.id).order_by(Message.timestamp.desc()).all()
+    unread_count = Message.query.filter_by(recipient_id=current_user.id, read=False).count()
+    return render_template("main/messages.html", messages=inbox, unread_count=unread_count)
+
+@bp.route("/messages/sent")
+@login_required
+def sent_messages():
+    """View sent messages"""
+    sent = Message.query.filter_by(sender_id=current_user.id).order_by(Message.timestamp.desc()).all()
+    return render_template("main/sent_messages.html", messages=sent)
+
+@bp.route("/messages/compose", methods=["GET", "POST"])
+@login_required
+def compose_message():
+    """Compose and send a one-on-one message"""
+    form = ComposeMessageForm()
+    
+    # Populate recipient choices based on user role
+    if current_user.role == 'student':
+        # Students can message instructors and TAs from their enrolled courses
+        enrolled_course_ids = [e.course_id for e in current_user.courses_enrolled]
+        courses = Course.query.filter(Course.id.in_(enrolled_course_ids)).all()
+        
+        # Get instructors and TAs from these courses
+        instructor_ids = [c.teacher for c in courses]
+        recipients = User.query.filter(
+            ((User.id.in_(instructor_ids)) | (User.role == 'ta')) &
+            (User.id != current_user.id)
+        ).all()
+    elif current_user.role == 'instructor':
+        # Instructors can message students from courses they teach, plus other staff
+        taught_courses = Course.query.filter_by(teacher=current_user.id).all()
+        student_ids = []
+        for course in taught_courses:
+            enrollments = Enrollment.query.filter_by(course_id=course.id).all()
+            student_ids.extend([e.student_id for e in enrollments])
+        
+        # Also include other instructors and TAs
+        recipients = User.query.filter(
+            ((User.id.in_(student_ids)) | (User.role.in_(['instructor', 'ta']))) &
+            (User.id != current_user.id)
+        ).all()
+    else:  # TA
+        # TAs can message students and instructors from their assigned courses only
+        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
+        ta_courses = Course.query.filter(Course.id.in_(ta_course_ids)).all()
+        
+        # Get students from assigned courses
+        student_ids = []
+        instructor_ids = []
+        for course in ta_courses:
+            enrollments = Enrollment.query.filter_by(course_id=course.id).all()
+            student_ids.extend([e.student_id for e in enrollments])
+            instructor_ids.append(course.teacher)
+        
+        # Include students and instructors from assigned courses, plus other TAs
+        recipients = User.query.filter(
+            ((User.id.in_(student_ids)) | (User.id.in_(instructor_ids)) | (User.role == 'ta')) &
+            (User.id != current_user.id)
+        ).all()
+    
+    form.recipient_id.choices = [(u.id, f"{u.username} ({u.role})") for u in recipients]
+    
+    if form.validate_on_submit():
+        message = Message(
+            sender_id=current_user.id,
+            recipient_id=form.recipient_id.data,
+            subject=form.subject.data,
+            body=form.body.data
+        )
+        db.session.add(message)
+        db.session.commit()
+        flash("Message sent successfully!", "success")
+        return redirect(url_for("main.messages"))
+    
+    return render_template("main/compose_message.html", form=form)
+
+@bp.route("/messages/<int:message_id>")
+@login_required
+def view_message(message_id):
+    """View a specific message"""
+    message = Message.query.get_or_404(message_id)
+    
+    # Ensure user is sender or recipient
+    if message.sender_id != current_user.id and message.recipient_id != current_user.id:
+        flash("You don't have permission to view this message.", "danger")
+        return redirect(url_for("main.messages"))
+    
+    # Mark as read if recipient is viewing
+    if message.recipient_id == current_user.id and not message.read:
+        message.read = True
+        db.session.commit()
+    
+    return render_template("main/view_message.html", message=message)
+
+@bp.route("/announcements")
+@login_required
+def announcements():
+    """View all announcements for user's courses"""
+    if current_user.role == 'student':
+        # Get announcements from enrolled courses
+        enrolled_course_ids = [e.course_id for e in current_user.courses_enrolled]
+        announcements_list = Announcement.query.filter(
+            Announcement.course_id.in_(enrolled_course_ids)
+        ).order_by(Announcement.timestamp.desc()).all()
+    elif current_user.role == 'instructor':
+        # Get announcements from taught courses
+        taught_course_ids = [c.id for c in current_user.courses_taught]
+        announcements_list = Announcement.query.filter(
+            Announcement.course_id.in_(taught_course_ids)
+        ).order_by(Announcement.timestamp.desc()).all()
+    else:  # TA
+        # TAs see announcements from their assigned courses only
+        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
+        announcements_list = Announcement.query.filter(
+            Announcement.course_id.in_(ta_course_ids)
+        ).order_by(Announcement.timestamp.desc()).all()
+    
+    return render_template("main/announcements.html", announcements=announcements_list)
+
+@bp.route("/announcements/create", methods=["GET", "POST"])
+@login_required
+def create_announcement():
+    """Create a course-wide announcement (instructors and TAs only)"""
+    if current_user.role not in ['instructor', 'ta']:
+        flash("Only instructors and TAs can post announcements.", "danger")
+        return redirect(url_for("main.announcements"))
+    
+    form = AnnouncementForm()
+    
+    # Populate course choices
+    if current_user.role == 'instructor':
+        courses = Course.query.filter_by(teacher=current_user.id).all()
+    else:  # TA - only assigned courses
+        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
+        courses = Course.query.filter(Course.id.in_(ta_course_ids)).all()
+    
+    form.course_id.choices = [(c.id, f"{c.title} ({c.code})") for c in courses]
+    
+    if not form.course_id.choices:
+        flash("You don't have any courses to post announcements to.", "info")
+        return redirect(url_for("main.announcements"))
+    
+    if form.validate_on_submit():
+        announcement = Announcement(
+            course_id=form.course_id.data,
+            author_id=current_user.id,
+            title=form.title.data,
+            content=form.content.data
+        )
+        db.session.add(announcement)
+        db.session.commit()
+        flash("Announcement posted successfully!", "success")
+        return redirect(url_for("main.announcements"))
+    
+    return render_template("main/create_announcement.html", form=form)
 

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}View Message{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ message.subject }}</h1>
+    
+    <div class="message-details">
+        <p><strong>From:</strong> {{ message.sender.username }} ({{ message.sender.email }})</p>
+        <p><strong>To:</strong> {{ message.recipient.username }}</p>
+        <p><strong>Sent:</strong> {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+    </div>
+    
+    <hr>
+    
+    <div class="message-body">
+        {{ message.body }}
+    </div>
+    
+    <hr>
+    
+    <div class="message-actions">
+        {% if message.recipient_id == current_user.id %}
+        <a href="{{ url_for('main.compose_message') }}" class="btn">Reply</a>
+        {% endif %}
+        <a href="{{ url_for('main.messages') }}" class="btn">Back to Inbox</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Sent Messages{% endblock %}
+
+{% block content %}
+<h1>Sent Messages</h1>
+
+<div class="message-nav">
+    <a href="{{ url_for('main.compose_message') }}" class="btn">Compose New Message</a>
+    <a href="{{ url_for('main.messages') }}" class="btn">Inbox</a>
+</div>
+
+{% if messages and messages|length > 0 %}
+<div class="messages-container">
+    {% for msg in messages %}
+    <div class="card message-card">
+        <a href="{{ url_for('main.view_message', message_id=msg.id) }}" style="text-decoration: none; color: inherit;">
+            <div class="message-header">
+                <strong>{{ msg.subject }}</strong>
+                <span class="message-to">To: {{ msg.recipient.username }}</span>
+            </div>
+            <div class="message-meta">
+                <span class="message-time">{{ msg.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                {% if msg.read %}
+                <span class="read-status">✓ Read</span>
+                {% else %}
+                <span class="unread-status">Unread</span>
+                {% endif %}
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No sent messages.</p>
+{% endif %}
+
+{% endblock %}

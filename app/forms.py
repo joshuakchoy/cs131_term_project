@@ -15,7 +15,7 @@ class RegistrationForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
     password_confirm = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password", message="Passwords must match")])
-    role = RadioField("Role", choices=[("student", "Student"), ("instructor", "Instructor")], validators=[DataRequired()])
+    role = RadioField("Role", choices=[("student", "Student"), ("instructor", "Instructor"), ("ta", "Teaching Assistant")], validators=[DataRequired()])
     submit = SubmitField("Create Account")
 
 class ForgotPasswordForm(FlaskForm):
@@ -48,3 +48,20 @@ class SubmitAssignmentForm(FlaskForm):
     content = TextAreaField("Submission Notes (optional)")
     file = FileField("Upload File", validators=[FileAllowed(['pdf', 'doc', 'docx', 'txt', 'zip', 'py', 'java', 'cpp', 'c'], 'Only documents and code files allowed!')])
     submit = SubmitField("Submit Assignment")
+
+class ComposeMessageForm(FlaskForm):
+    recipient_id = SelectField("To", coerce=int, validators=[DataRequired()])
+    subject = StringField("Subject", validators=[DataRequired(), Length(max=128)])
+    body = TextAreaField("Message", validators=[DataRequired()])
+    submit = SubmitField("Send Message")
+
+class AnnouncementForm(FlaskForm):
+    course_id = SelectField("Course", coerce=int, validators=[DataRequired()])
+    title = StringField("Title", validators=[DataRequired(), Length(max=128)])
+    content = TextAreaField("Announcement", validators=[DataRequired()])
+    submit = SubmitField("Post Announcement")
+
+class AssignTAForm(FlaskForm):
+    ta_id = SelectField("Teaching Assistant", coerce=int, validators=[DataRequired()])
+    course_id = SelectField("Course", coerce=int, validators=[DataRequired()])
+    submit = SubmitField("Assign TA")
