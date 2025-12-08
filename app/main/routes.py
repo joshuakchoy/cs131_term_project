@@ -13,7 +13,7 @@ def default():
 @bp.route("/home")
 def index():
     return render_template("main/home.html")
-
+ 
 @bp.route("/grades")
 def grades():
     return render_template("main/grades.html")
@@ -72,7 +72,6 @@ def create_assignment():
     return render_template("main/create_assignment.html", form=form)
 
 @bp.route("/create_course", methods=["GET", "POST"])
-@bp.route("/create_course", methods=["GET", "POST"])
 @login_required
 def create_course():
     # only instructors can create courses
@@ -118,7 +117,6 @@ def teacher_portal():
 @bp.route("/course/<int:course_id>")
 @login_required
 def view_course(course_id):
-    """View course details and manage students (instructor only)"""
     course = Course.query.get_or_404(course_id)
     
     # Check if user is the instructor of this course

@@ -1,21 +1,40 @@
 {% extends "base.html" %} {% block title %}Assignments{% endblock %} {% block
 content %}
-<h1>Assignments</h1>
-<p>These are your assignments.</p>
-<a href="{{ url_for('main.create_assignment') }}">Create Assignment</a>
+<div class="assignments-header">
+  <div>
+    <h1>Assignments</h1>
+    <p class="muted">These are your assignments.</p>
+  </div>
+  <div>
+    <a href="{{ url_for('main.create_assignment') }}" class="btn-create">+ Create Assignment</a>
+  </div>
+</div>
 
 {% if assignments and assignments|length > 0 %}
-<ul class="assignments-list">
-  {% for a in assignments %}
-  <li class="assignment-item">
-    <h3>{{ a.title }}</h3>
-    {% if a.description %}
-    <p>{{ a.description }}</p>
-    {% endif %}
-    <p><strong>Due:</strong> {{ a.due_date }}</p>
-  </li>
-  {% endfor %}
-</ul>
+  <ul class="assignments-list">
+    {% for a in assignments %}
+      <li class="assignment-item">
+        <div class="assignment-card">
+          <div class="assignment-card-header">
+            <h3 class="assignment-title">{{ a.title }}</h3>
+            <span class="assignment-due">Due: {{ a.due_date }}</span>
+          </div>
+          {% if a.description %}
+          <p class="assignment-desc">{{ a.description }}</p>
+          {% endif %}
+          <div class="assignment-meta">
+            {% if a.course %}
+              <span class="meta-pill">Course: {{ a.course.title }}</span>
+            {% else %}
+              <span class="meta-pill meta-warning">Unlinked</span>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
 {% else %}
-<p>No assignments found. Create one to get started.</p>
-{% endif %} {% endblock %}
+  <p>No assignments found. Create one to get started.</p>
+{% endif %}
+
+{% endblock %}
