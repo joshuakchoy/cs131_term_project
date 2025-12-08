@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 import os
 from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm
@@ -32,8 +32,38 @@ def classes():
 
 @bp.route("/assignments")
 def assignments():
-    assignments = Assignment.query.order_by(Assignment.id.desc()).all()
-    return render_template("main/assignments.html", assignments=assignments)
+    # Server-side sorting support via query params: ?sort=due_date|course&order=asc|desc
+    sort = request.args.get("sort")
+    order = request.args.get("order", "asc")
+
+    q = Assignment.query
+    # If the current user is an authenticated student, only show assignments
+    # for courses they are enrolled in. Instructors and anonymous users keep full view.
+    if getattr(current_user, 'is_authenticated', False) and getattr(current_user, 'role', None) == 'student':
+        enrolled = Enrollment.query.filter_by(student_id=current_user.id).all()
+        enrolled_ids = [e.course_id for e in enrolled]
+        # if student isn't enrolled anywhere, return empty list quickly
+        if not enrolled_ids:
+            return render_template("main/assignments.html", assignments=[], sort=sort, order=order)
+        q = q.filter(Assignment.course_id.in_(enrolled_ids))
+    if sort == "due_date":
+        if order == "asc":
+            q = q.order_by(Assignment.due_date.asc())
+        else:
+            q = q.order_by(Assignment.due_date.desc())
+    elif sort == "course":
+        # outerjoin so unlinked assignments are included
+        q = q.outerjoin(Course)
+        if order == "asc":
+            q = q.order_by(Course.title.asc())
+        else:
+            q = q.order_by(Course.title.desc())
+    else:
+        # default order (newest first)
+        q = q.order_by(Assignment.id.desc())
+
+    assignments = q.all()
+    return render_template("main/assignments.html", assignments=assignments, sort=sort, order=order)
 
 @bp.route("/create_assignment", methods=["GET", "POST"])
 @login_required

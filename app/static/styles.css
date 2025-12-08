@@ -99,7 +99,7 @@ body {
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: 1fr; /* force one assignment per row */
   gap: 18px;
 }
 .assignment-item {
@@ -113,6 +113,16 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 140px;
+  flex: 1 1 auto; /* allow card to grow and fill grid cell */
+}
+
+/* Ensure assignment grid items are equal height and cards stretch */
+.assignments-list {
+  align-items: stretch; /* for grid, ensures items stretch vertically */
+}
+
+.assignment-item {
+  display: flex; /* make grid child a flex container so card can stretch */
 }
 .assignment-card-header {
   display: flex;
@@ -157,8 +167,6 @@ body {
     grid-template-columns: 1fr;
   }
 }
-
-/* Teacher Portal Styles (moved from teacher_portal.html) */
 
 /* Course Grid */
 .courses-grid {
@@ -538,5 +546,93 @@ body {
   .auth-card {
     width: 100%;
     border-radius: 10px;
+  }
+}
+
+/* Course view styles */
+.course-container {
+  max-width: 1100px;
+  margin: 12px auto;
+  padding: 18px;
+}
+
+.course-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(102, 126, 234, 0.08),
+    rgba(118, 75, 162, 0.04)
+  );
+  margin-bottom: 18px;
+}
+.course-hero-left h1 {
+  margin: 0 0 6px 0;
+}
+.course-desc {
+  margin: 6px 0 0 0;
+  color: #444;
+}
+.course-hero-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+}
+
+.course-main {
+}
+.course-sidebar {
+}
+
+.sidebar-card {
+  background: white;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(20, 20, 40, 0.04);
+  margin-bottom: 14px;
+}
+
+.students-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.student-item {
+  padding: 8px;
+  border-radius: 8px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+.student-item .muted {
+  color: #666;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.course-assignments .assignment-item {
+  margin: 0 0 12px 0;
+}
+
+@media (max-width: 900px) {
+  .course-grid {
+    grid-template-columns: 1fr;
+  }
+  .course-hero {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
