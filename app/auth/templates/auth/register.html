@@ -1,46 +1,72 @@
 {% extends "registerBase.html" %} {% block title %}Register{% endblock %} {%
 block content %}
-<h1>Create Account</h1>
-<form method="POST" novalidate>
-  {{ form.hidden_tag() }}
-  <div class="form-field">
-    {{ form.username.label }}<br />
-    {{ form.username(size=32, class_="input") }} {% for err in
-    form.username.errors %}
-    <div class="error">{{ err }}</div>
-    {% endfor %}
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Create Account</h1>
+    </div>
+    <div class="auth-body">
+      <form method="POST" class="auth-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-field">
+          <label for="username">{{ form.username.label.text }}</label>
+          {{ form.username(id='username', size=32, class_='input') }} {% for err
+          in form.username.errors %}
+          <div class="error">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-field">
+          <label for="email">{{ form.email.label.text }}</label>
+          {{ form.email(id='email', size=32, class_='input') }} {% for err in
+          form.email.errors %}
+          <div class="error">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-field">
+          <label for="password">{{ form.password.label.text }}</label>
+          {{ form.password(id='password', size=32, class_='input') }} {% for err
+          in form.password.errors %}
+          <div class="error">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-field">
+          <label for="password_confirm"
+            >{{ form.password_confirm.label.text }}</label
+          >
+          {{ form.password_confirm(id='password_confirm', size=32,
+          class_='input') }} {% for err in form.password_confirm.errors %}
+          <div class="error">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-field">
+          <label>{{ form.role.label.text }}</label>
+          <div>
+            {% for radio_field in form.role %}
+            <label style="margin-right: 12px"
+              >{{ radio_field() }} {{ radio_field.label }}</label
+            >
+            {% endfor %}
+          </div>
+          {% for err in form.role.errors %}
+          <div class="error">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="auth-actions">
+          {{ form.submit(class_='btn-primary') }}
+          <a href="{{ url_for('auth.login') }}" class="auth-footer"
+            >Already have an account?</a
+          >
+        </div>
+      </form>
+    </div>
   </div>
-  <div class="form-field">
-    {{ form.email.label }}<br />
-    {{ form.email(size=32, class_="input") }} {% for err in form.email.errors %}
-    <div class="error">{{ err }}</div>
-    {% endfor %}
-  </div>
-  <div class="form-field">
-    {{ form.password.label }}<br />
-    {{ form.password(size=32, class_="input") }} {% for err in
-    form.password.errors %}
-    <div class="error">{{ err }}</div>
-    {% endfor %}
-  </div>
-  <div class="form-field">
-    {{ form.password_confirm.label }}<br />
-    {{ form.password_confirm(size=32, class_="input") }} {% for err in
-    form.password_confirm.errors %}
-    <div class="error">{{ err }}</div>
-    {% endfor %}
-  </div>
-  <div class="form-field">
-    {{ form.role.label }}<br />
-    {% for radio_field in form.role %} {{ radio_field() }} {{ radio_field.label
-    }}<br />
-    {% endfor %} {% for err in form.role.errors %}
-    <div class="error">{{ err }}</div>
-    {% endfor %}
-  </div>
-  {{ form.submit(class_="btn") }}
-</form>
-<p>
-  Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>
-</p>
+</div>
+
 {% endblock %}
