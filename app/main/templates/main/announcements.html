@@ -8,8 +8,6 @@
 <a href="{{ url_for('main.create_announcement') }}" class="teacher-btn">Post New Announcement</a>
 {% endif %}
 
-<a href="{{ url_for('main.messages') }}" class="button-primary">Back to Messages</a>
-
 {% if announcements and announcements|length > 0 %}
 <div class="announcements-container">
     {% for announcement in announcements %}
