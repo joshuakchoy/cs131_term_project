@@ -47,4 +47,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+// Modal helpers for teacher portal (moved from teacher_portal.html)
+function openCourseModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+function closeCourseModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+// Close modal when clicking outside the modal-content
+window.addEventListener("click", function (event) {
+    if (event.target.classList && event.target.classList.contains("modal")) {
+        event.target.style.display = "none";
+    }
+});
 });

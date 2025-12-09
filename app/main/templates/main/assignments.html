@@ -1,25 +1,57 @@
 {% extends "base.html" %} {% block title %}Assignments{% endblock %} {% block
 content %}
-<h1>Assignments</h1>
-<p>These are your assignments.</p>
-{% if current_user.is_teacher %}
-  <a class="teacher-btn" href="{{ url_for('main.create_assignment') }}">Create Assignment</a>
+<div class="assignments-header">
+  <div>
+    <h1>Assignments</h1>
+    <p class="muted">These are your assignments.</p>
+  </div>
+  <div>
+    {% if current_user.is_teacher %}
+  <a class="teacher-btn" href="{{ url_for('main.create_assignment') }}" class="btn-create"
+      >+ Create Assignment</a
+    >
+    <div style="display: inline-block; margin-left: 12px">
+      <span style="font-size: 13px; color: #444; margin-right: 8px">Sort:</span>
+      <a href="{{ url_for('main.assignments', sort='due_date', order='asc') }}"
+        >Due ↑</a
+      >
+      &nbsp;|&nbsp;
+      <a href="{{ url_for('main.assignments', sort='due_date', order='desc') }}"
+        >Due ↓</a
+      >
+      &nbsp;|&nbsp;
+      <a href="{{ url_for('main.assignments', sort='course', order='asc') }}"
+        >Course A→Z</a
+      >
+      &nbsp;|&nbsp;
+      <a href="{{ url_for('main.assignments', sort='course', order='desc') }}"
+        >Course Z→A</a
+      >
+    </div>
+  </div>
+</div>
 {% endif %}
 
 {% if assignments and assignments|length > 0 %}
 <ul class="assignments-list">
   {% for a in assignments %}
   <li class="assignment-item">
-    <h3>{{ a.title }}</h3>
-    {% if a.description %}
-    <p>{{ a.description }}</p>
-    {% endif %}
-    <p><strong>Due:</strong> {{ a.due_date }}</p>
-    {% if current_user.role == 'student' %}
-    <a href="{{ url_for('main.submit_assignment', assignment_id=a.id) }}" class="button-primary">Submit Assignment</a>
-    {% elif current_user.role == 'instructor' %}
-    <a href="{{ url_for('main.view_submissions', assignment_id=a.id) }}" class="teacher-btn">View Submissions</a>
-    {% endif %}
+    <div class="assignment-card">
+      <div class="assignment-card-header">
+        <h3 class="assignment-title">{{ a.title }}</h3>
+        <span class="assignment-due">Due: {{ a.due_date }}</span>
+      </div>
+      {% if a.description %}
+      <p class="assignment-desc">{{ a.description }}</p>
+      {% endif %}
+      <div class="assignment-meta">
+        {% if a.course %}
+        <span class="meta-pill">Course: {{ a.course.title }}</span>
+        {% else %}
+        <span class="meta-pill meta-warning">Unlinked</span>
+        {% endif %}
+      </div>
+    </div>
   </li>
   {% endfor %}
 </ul>
