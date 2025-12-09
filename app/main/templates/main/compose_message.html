@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "messageBase.html" %}
 {% block title %}Compose Message{% endblock %}
 
 {% block content %}
@@ -31,8 +31,8 @@
         {% endfor %}
     </div>
     
-    <p>{{ form.submit(class="btn") }}</p>
+    <p>{{ form.submit(class="button-primary") }}</p>
 </form>
 
-<a href="{{ url_for('main.messages') }}">Back to Inbox</a>
+<a href="{{ url_for('main.messages') }}" class="button-primary">Back to Inbox</a>
 {% endblock %}

@@ -1,12 +1,12 @@
-{% extends "base.html" %}
+{% extends "messageBase.html" %}
 {% block title %}Sent Messages{% endblock %}
 
 {% block content %}
 <h1>Sent Messages</h1>
 
 <div class="message-nav">
-    <a href="{{ url_for('main.compose_message') }}" class="btn">Compose New Message</a>
-    <a href="{{ url_for('main.messages') }}" class="btn">Inbox</a>
+    <a href="{{ url_for('main.compose_message') }}" class="button-primary">Compose New Message</a>
+    <a href="{{ url_for('main.messages') }}" class="button-primary">Inbox</a>
 </div>
 
 {% if messages and messages|length > 0 %}

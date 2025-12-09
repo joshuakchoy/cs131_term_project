@@ -300,3 +300,142 @@ a:visited {
   border-color: #581f91;
 }
 
+/* Floating Messaging Hub */
+.message-hub-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.message-hub-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #581f91;
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(88, 31, 145, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.message-hub-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(88, 31, 145, 0.6);
+}
+
+.message-hub-button:active {
+  transform: scale(0.95);
+}
+
+.message-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid white;
+}
+
+.message-hub-modal {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 450px;
+  max-width: calc(100vw - 40px);
+  height: 600px;
+  max-height: calc(100vh - 120px);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+.message-hub-modal.active {
+  display: flex;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-hub-header {
+  background-color: #581f91;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.message-hub-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.message-hub-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.message-hub-close:hover {
+  transform: scale(1.2);
+}
+
+.message-hub-content {
+  flex: 1;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.message-hub-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .message-hub-modal {
+    width: calc(100vw - 40px);
+    height: calc(100vh - 120px);
+    right: 20px;
+    bottom: 90px;
+  }
+}
+

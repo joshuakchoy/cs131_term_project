@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "messageBase.html" %}
 {% block title %}Inbox{% endblock %}
 
 {% block content %}
@@ -6,9 +6,8 @@
 <p>You have {{ unread_count }} unread message(s).</p>
 
 <div class="message-nav">
-    <a href="{{ url_for('main.compose_message') }}" class="btn">Compose New Message</a>
-    <a href="{{ url_for('main.sent_messages') }}" class="btn">Sent Messages</a>
-    <a href="{{ url_for('main.announcements') }}" class="btn">View Announcements</a>
+    <a href="{{ url_for('main.compose_message') }}" class="button-primary">Compose New Message</a>
+    <a href="{{ url_for('main.sent_messages') }}" class="button-primary">Sent Messages</a>
 </div>
 
 {% if messages and messages|length > 0 %}
