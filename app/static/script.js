@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+});
 
 // Modal helpers for teacher portal (moved from teacher_portal.html)
 function openCourseModal(modalId) {
@@ -68,5 +69,4 @@ window.addEventListener("click", function (event) {
     if (event.target.classList && event.target.classList.contains("modal")) {
         event.target.style.display = "none";
     }
-});
 });

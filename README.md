@@ -154,9 +154,13 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 ## Test Results
 ✅ **All 8 tests passing**
 
-## Screenshot
+## Login Page
 
-![Rendered page](login.png)
+![Rendered page](registration.png)
+
+## Student Page Sample
+![Rendered page](homescreen.png)
+- Easy access to messages and tabs via sidebar
 
 
 ## UI Sketches
