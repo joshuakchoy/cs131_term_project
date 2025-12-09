@@ -1,12 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Submit Assignment{% endblock %}
+{% block title %}{% if existing_submission %}Resubmit Assignment{% else %}Submit Assignment{% endif %}{% endblock %}
 
 {% block content %}
-<h1>Submit Assignment</h1>
+<h1>{% if existing_submission %}Resubmit Assignment{% else %}Submit Assignment{% endif %}</h1>
 <h2>{{ assignment.title }}</h2>
 <p><strong>Due:</strong> {{ assignment.due_date }}</p>
 {% if assignment.description %}
 <p>{{ assignment.description }}</p>
+{% endif %}
+{% if existing_submission %}
+<div class="alert alert-info">
+  <strong>Previous submission:</strong> Submitted on {{ existing_submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}
+  {% if existing_submission.file_path %}
+  <br><strong>File:</strong> {{ existing_submission.file_path }}
+  {% endif %}
+</div>
 {% endif %}
 
 <form method="POST" enctype="multipart/form-data">
@@ -29,7 +37,13 @@
         <small>Allowed file types: PDF, DOC, DOCX, TXT, ZIP, PY, JAVA, CPP, C (max 16MB)</small>
     </div>
     
-    <p>{{ form.submit(class="btn") }}</p>
+    <p>
+        {% if existing_submission %}
+        <button type="submit" class="btn">Resubmit Assignment</button>
+        {% else %}
+        {{ form.submit(class="btn") }}
+        {% endif %}
+    </p>
 </form>
 
 <a href="{{ url_for('main.assignments') }}">Back to Assignments</a>

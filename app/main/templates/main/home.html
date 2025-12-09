@@ -14,7 +14,7 @@
         {% if assignments and assignments|length > 0 %}
         <ul class="assignments-list">
             {% for a in assignments %}
-            <li class="assignment-item">
+            <li>
                 <h3>{{ a.title }}</h3>
                 {% if a.description %}
                 <p>{{ a.description }}</p>

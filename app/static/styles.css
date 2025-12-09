@@ -499,6 +499,23 @@ a:visited {
 .assignment-item {
   display: flex; /* make grid child a flex container so card can stretch */
 }
+
+.assignment-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex: 1;
+  transition: transform 0.2s ease;
+}
+
+.assignment-card-link:hover {
+  transform: translateY(-2px);
+}
+
+.assignment-card-link:hover .assignment-card {
+  box-shadow: 0 8px 20px rgba(88, 31, 145, 0.15);
+}
+
 .assignment-card-header {
   display: flex;
   justify-content: space-between;
@@ -532,6 +549,24 @@ a:visited {
 .meta-warning {
   background: #fff4e6;
   color: #a65a00;
+}
+.meta-completed {
+  background: #e6f7e6;
+  color: #2d7a2d;
+  font-weight: 600;
+}
+
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+.alert-info {
+  background-color: #e6f2ff;
+  border-color: #b3d9ff;
+  color: #004080;
 }
 
 @media (max-width: 700px) {

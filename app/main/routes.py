@@ -87,7 +87,18 @@ def assignments():
         q = q.order_by(Assignment.id.desc())
 
     assignments = q.all()
-    return render_template("main/assignments.html", assignments=assignments, sort=sort, order=order)
+    
+    # For students, check which assignments have been submitted
+    submission_status = {}
+    if getattr(current_user, 'is_authenticated', False) and getattr(current_user, 'role', None) == 'student':
+        for assignment in assignments:
+            existing_submission = Submission.query.filter_by(
+                assignment_id=assignment.id,
+                student_id=current_user.id
+            ).first()
+            submission_status[assignment.id] = existing_submission is not None
+    
+    return render_template("main/assignments.html", assignments=assignments, sort=sort, order=order, submission_status=submission_status)
     if current_user.role == 'student':
         # Get course IDs the student is enrolled in
         enrolled_course_ids = [enrollment.course_id for enrollment in current_user.courses_enrolled]
@@ -375,7 +386,17 @@ def submit_assignment(assignment_id):
         
         return redirect(url_for("main.assignments"))
     
-    return render_template("main/submit_assignment.html", form=form, assignment=assignment)
+    # Check if student already has a submission
+    existing_submission = Submission.query.filter_by(
+        assignment_id=assignment_id,
+        student_id=current_user.id
+    ).first()
+    
+    # Pre-populate form with existing submission data
+    if existing_submission and not form.is_submitted():
+        form.content.data = existing_submission.content
+    
+    return render_template("main/submit_assignment.html", form=form, assignment=assignment, existing_submission=existing_submission)
 
 @bp.route("/download/<filename>")
 @login_required
