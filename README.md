@@ -1,28 +1,66 @@
 # cs131_term_project
-Learning Management System for CS151 term project
+Learning Management System for CS131 term project
 
-HTML stubs only; no real functionality. WTForms validation runs; POST replies "Not implemented".
+A full-featured learning management system with user authentication, course management, assignment submission, messaging, and grading capabilities.
 
-## Quickstart
+## Setup Instructions
 
+### 1. Clone the Repository
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-
-# Option A
-export FLASK_APP=run.py
-flask run
-
-# Option B
-python run.py
+git clone https://github.com/joshuakchoy/cs131_term_project.git
+cd cs131_term_project
 ```
 
-Visit:
+### 2. Create Virtual Environment
+```bash
+python -m venv .venv
 
-- `http://localhost:5000/` (index)
-- `http://localhost:5000/feature` (feature demo)
-- `http://localhost:5000/auth/login` (WTForms login stub)
+# Windows
+.venv\Scripts\activate
+
+# Mac/Linux
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Application
+```bash
+# Option A
+python run.py
+
+# Option B
+export FLASK_APP=run.py  # Windows: set FLASK_APP=run.py
+flask run
+```
+
+### 5. Access the Application
+Visit `http://localhost:5000/` in your browser
+
+## Testing
+
+### Run All Tests
+```bash
+pytest tests/ -v
+```
+
+### Run Specific Test Files
+```bash
+pytest tests/test_models.py -v
+pytest tests/test_routes.py -v
+pytest tests/test_forms.py -v
+```
+
+### Test Coverage
+The test suite includes 8 unit tests covering:
+- **Models**: User authentication, course creation
+- **Routes**: Login, protected routes, authentication
+- **Forms**: Registration validation
+
+All tests must pass before merging to main branch.
 
 ## Project Structure
 
@@ -83,8 +121,32 @@ repo/
 ## UI Sketches
 
 ![Rendered page](sketch.png)
+## User Roles
+
+### Instructor
+- Create and manage courses
+- Create and grade assignments
+- View all student submissions
+- Post announcements to classes
+- Manage TAs for their courses
+- Send messages to students and TAs
+
+### Student
+- Enroll in courses
+- View and submit assignments
+- Track grades across all courses
+- Receive announcements and messages
+- Resubmit assignments before due date
+- View assignment completion status
+
+### Teaching Assistant (TA)
+- Assist with grading assignments
+- Access course materials
+- Communicate with students
+- View submissions for assigned courses
+
 ## Team Roles
 
-- Backend: app factory, models: Joshua Choy
-- Frontend: Jan David Ella
-- QA: run acceptance checklist: Jan David Ella, Joshua Choy
+- **Backend & Models**: Joshua Choy
+- **Frontend & Styling**: Jan David Ella
+- **Testing & QA**: Jan David Ella, Joshua Choy
