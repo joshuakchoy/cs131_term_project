@@ -74,18 +74,61 @@ repo/
     auth/
       __init__.py
       routes.py
-      templates/auth/login.html
+      templates/
+        auth/
+          login.html
+          forgot_password.html
+          register.html
+          reset_password.html
     main/
       __init__.py
       routes.py
-      templates/main/index.html
-      templates/main/feature.html
-    templates/base.html
-    static/styles.css
-  run.py
-  requirements.txt
-  README.md
-  .gitignore
+      templates/
+        main/
+          analytics.html
+          announcements.html
+          assignments.html
+          classes.html
+          compose_message.html
+          create_announcment.html
+          create_assignment.html
+          create_course.html
+          default.html
+          grades.html
+          home.html
+          manage_tas.html
+          messages.html
+          submit_assignment.html
+          teacher_portal.html
+          view_course.html
+          view_message.html
+          view_submissions.html
+    templates/
+      base.html
+      messageBase.html
+      registerBase.html
+      sidebar.html
+      thumbnail.html
+    static/
+      styles.css
+      side.css
+      script.js
+      math.png
+      logo.jpg
+    tests/
+      conftest.py
+      test_forms.py
+      test_models.py
+      test_routes.py
+    homescreen.png
+    login.png
+    registration.png
+    screenshot.png
+    sketch.png
+    run.py
+    requirements.txt
+    README.md
+    .gitignore
 ```
 
 ## Acceptance Checklist
