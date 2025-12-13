@@ -53,14 +53,12 @@
     
     {% if current_user.role == 'student' %}
     <div class="grade-summary">
-        {% set total_graded = submissions_dict.values()|selectattr('grade', 'defined')|list|length %}
         {% set total_assignments = assignments|length %}
-        <p><strong>Graded:</strong> {{ total_graded }} / {{ total_assignments }} assignments</p>
-        
-        {% if total_graded > 0 %}
-        {% set sum_grades = submissions_dict.values()|selectattr('grade', 'defined')|map(attribute='grade')|sum %}
-        {% set avg_grade = (sum_grades / total_graded)|round(2) %}
+        <p><strong>Graded:</strong> {{ graded_count }} / {{ total_assignments }} assignments</p>
+        {% if graded_count > 0 and avg_grade is not none %}
         <p><strong>Average Grade:</strong> {{ avg_grade }}%</p>
+        {% else %}
+        <p><em>No graded assignments yet.</em></p>
         {% endif %}
     </div>
     {% endif %}

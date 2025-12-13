@@ -25,6 +25,14 @@ block content %}
     <span style="color: red">[{{ error }}]</span>
     {% endfor %}
   </p>
+  <p>
+    {{ form.image_url.label }}<br />
+    {{ form.image_url(size=64) }}<br />
+    <small class="muted">Provide a full image URL (optional). Defaults to the standard card image.</small><br />
+    {% for error in form.image_url.errors %}
+    <span style="color: red">[{{ error }}]</span>
+    {% endfor %}
+  </p>
   <p>{{ form.submit() }}</p>
 
   {% endblock %}

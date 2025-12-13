@@ -17,7 +17,7 @@ content %}
   >
     <div class="class-image-container">
       <img
-        src="{{ url_for('static', filename='math.png') }}"
+        src="{{ course.image_url if course.image_url else url_for('static', filename='math.png') }}"
         alt="class pic"
         class="class-img"
       />

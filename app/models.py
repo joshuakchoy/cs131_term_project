@@ -55,6 +55,7 @@ class Course(db.Model):
     description = db.Column(db.Text, nullable=True)
     code = db.Column(db.String(32), unique=True, nullable=False)
     teacher = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    image_url = db.Column(db.String(255), nullable=True)  # optional course image
 
     # relationships
     instructor = db.relationship('User', back_populates='courses_taught')

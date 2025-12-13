@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, flash, redirect, url_for, current_
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import os
+from datetime import datetime
 from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm, SubmitAssignmentForm, ComposeMessageForm, AnnouncementForm, AssignTAForm, GradeSubmissionForm
 from ..models import db, Assignment, Course, User, Enrollment, Submission, Message, Announcement, TAAssignment
 
@@ -192,7 +193,8 @@ def create_course():
             title=form.name.data,
             code=form.code.data,
             description=form.description.data,
-            teacher=current_user.id
+            teacher=current_user.id,
+            image_url=form.image_url.data or None
         )
         db.session.add(course)
         db.session.commit()
@@ -446,13 +448,27 @@ def view_submissions(assignment_id):
             flash("You can only view submissions for courses you are assigned to.", "danger")
             return redirect(url_for("main.assignments"))
     
+    # Parse due date for late detection (stored as string yyyy-mm-dd)
+    due_dt = None
+    try:
+        due_dt = datetime.strptime(str(assignment.due_date), "%Y-%m-%d")
+    except Exception:
+        due_dt = None
+
     # Get all submissions for this assignment with student info
     submissions = Submission.query.filter_by(assignment_id=assignment_id).all()
+
+    submissions_with_status = []
+    for sub in submissions:
+        is_late = False
+        if due_dt and sub.submitted_at:
+            is_late = sub.submitted_at > due_dt
+        submissions_with_status.append({"submission": sub, "is_late": is_late})
     
     # Create a form instance for CSRF protection
     form = GradeSubmissionForm()
     
-    return render_template("main/view_submissions.html", assignment=assignment, submissions=submissions, form=form)
+    return render_template("main/view_submissions.html", assignment=assignment, submissions=submissions_with_status, form=form)
 
 @bp.route("/grade_submission/<int:submission_id>", methods=["GET", "POST"])
 @login_required
@@ -664,10 +680,24 @@ def view_course_grades(course_id):
     
     # If student, get their submissions and grades
     submissions_dict = {}
+    graded_count = 0
+    avg_grade = None
+
     if current_user.role == 'student':
         submissions = Submission.query.filter_by(student_id=current_user.id).all()
-        # Create a dictionary mapping assignment_id to submission
         submissions_dict = {sub.assignment_id: sub for sub in submissions}
-    
-    return render_template("main/view_grades.html", course=course, assignments=assignments, submissions_dict=submissions_dict)
+
+        graded_subs = [sub for sub in submissions if sub.grade is not None]
+        graded_count = len(graded_subs)
+        if graded_subs:
+            avg_grade = round(sum(sub.grade for sub in graded_subs) / graded_count, 2)
+
+    return render_template(
+        "main/view_grades.html",
+        course=course,
+        assignments=assignments,
+        submissions_dict=submissions_dict,
+        graded_count=graded_count,
+        avg_grade=avg_grade,
+    )
 

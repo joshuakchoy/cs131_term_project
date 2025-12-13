@@ -38,6 +38,7 @@ class CreateCourseForm(FlaskForm):
     name = StringField("Course Name", validators=[DataRequired(), Length(max=128)])
     code = StringField("Course Code", validators=[DataRequired(), Length(max=32)])
     description = StringField("Course Description", validators=[DataRequired(), Length(max=512)])
+    image_url = StringField("Course Image URL (optional)", validators=[Length(max=255)])
     submit = SubmitField("Create Course")
 
 class EnrollStudentForm(FlaskForm):

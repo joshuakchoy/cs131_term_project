@@ -10,10 +10,18 @@
 <div class="submissions-container">
     <h2>Student Submissions ({{ submissions|length }})</h2>
     
-    {% for submission in submissions %}
+    {% for item in submissions %}
+    {% set submission = item.submission %}
     <div class="card submission-card">
-        <h3>{{ submission.student.username }} ({{ submission.student.email }})</h3>
-        <p><strong>Submitted:</strong> {{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        <div class="submission-header">
+            <div>
+                <h3>{{ submission.student.username }} ({{ submission.student.email }})</h3>
+                <p><strong>Submitted:</strong> {{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+            {% if item.is_late %}
+            <span class="late-badge">Late</span>
+            {% endif %}
+        </div>
         
         {% if submission.content %}
         <div class="submission-content">
@@ -56,3 +64,21 @@
 
 <a href="{{ url_for('main.assignments') }}" class="btn">Back to Assignments</a>
 {% endblock %}
+
+<style>
+.late-badge {
+    align-self: flex-start;
+    background: #e53935;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.submission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+</style>
