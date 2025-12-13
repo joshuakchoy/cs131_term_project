@@ -304,7 +304,8 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 
 ## Team Roles
 
-- **Backend & Models**: Joshua Choy
+- **Backend**: Joshua Choy
+- **Models**: Joshua Choy, Jan David Ella
 - **Frontend & Styling**: Jan David Ella
 - **Testing & QA**: Jan David Ella, Joshua Choy
 
