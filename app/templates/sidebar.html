@@ -54,6 +54,7 @@
             </a>
             <span class="nav-tooltip">Assignments</span>
           </li>
+          {% if current_user.is_authenticated and current_user.role == 'student' %}
           <li class="nav-item">
             <a href="/grades" class="nav-link">
               <span class="material-symbols-rounded">star</span>
@@ -61,6 +62,7 @@
             </a>
             <span class="nav-tooltip">Grades</span>
           </li>
+          {% endif %}
           <li class="nav-item">
             <a href="/analytics" class="nav-link">
               <span class="material-symbols-rounded">chart_data</span>

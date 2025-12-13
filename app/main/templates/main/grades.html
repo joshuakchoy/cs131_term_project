@@ -3,6 +3,41 @@
 {% block title %}Grades{% endblock %}
 
 {% block content %}
-    <h1>Grades</h1>
-    <p>These are your grades.</p>
+<h1>Your Grades</h1>
+<p>Here are your grades for all assignments.</p>
+    <div class="classes-grid-container">
+    {% if courses and courses|length > 0 %} {% for course in courses %}
+    <a
+        href="{{ url_for('main.view_course_grades', course_id=course.id) }}"
+        class="grade-card"
+    >
+        <div class="class-image-container">
+            <div class="class-img-wrapper">
+                <img
+                    src="{{ url_for('static', filename='math.png') }}"
+                    alt="class pic"
+                    class="class-img"
+                />
+                {% if current_user.role == 'student' and course_averages.get(course.id) %}
+                <div class="grade-overlay">
+                    <span class="grade-overlay-number"><strong>{{ course_averages.get(course.id) }}%</strong></span>
+                </div>
+                {%else%}
+                <div class="grade-overlay">
+                    <span class="grade-overlay-number"><strong> --% </strong></span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="class-text-container">
+                <h3 class="class-title">{{ course.title }}</h3>
+                <p class="class-code">{{ course.code if course.code else "N/A" }}</p>
+                <p class="class-teacher">{{ course.instructor.username }}</p>
+            </div>
+        </div>
+    </a>
+    {% endfor %} {% else %}
+    <p>No classes available.</p>
+    {% endif %}
+    </div>
+
 {% endblock %}

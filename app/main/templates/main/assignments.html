@@ -6,7 +6,7 @@ content %}
     <p class="muted">These are your assignments.</p>
   </div>
   <div>
-    {% if current_user.is_teacher %}
+    {% if current_user.role == 'instructor' %}
     <a class="teacher-btn" href="{{ url_for('main.create_assignment') }}" class="btn-create"
       >+ Create Assignment</a
     >
@@ -36,7 +36,7 @@ content %}
 <ul class="assignments-list">
   {% for a in assignments %}
   <li class="assignment-item">
-    {% if current_user.is_teacher %}
+    {% if current_user.role == 'instructor' %}
     <a href="{{ url_for('main.view_submissions', assignment_id=a.id) }}" class="assignment-card-link">
     {% else %}
     <a href="{{ url_for('main.submit_assignment', assignment_id=a.id) }}" class="assignment-card-link">

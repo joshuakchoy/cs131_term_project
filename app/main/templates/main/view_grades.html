@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}View Grades{% endblock %}
+
+{% block content %}
+<div class="grades-container">
+    <h1>Grades for {{ course.title }}</h1>
+    <p class="course-info"><strong>Course Code:</strong> {{ course.code }}</p>
+    <p class="course-info"><strong>Instructor:</strong> {{ course.instructor.username }}</p>
+    
+    {% if assignments and assignments|length > 0 %}
+    <div class="grades-table-container">
+        <table class="grades-table">
+            <thead>
+                <tr>
+                    <th>Assignment</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                <tr>
+                    <td>
+                        <strong>{{ assignment.title }}</strong>
+                        {% if assignment.description %}
+                        <br><span class="assignment-desc">{{ assignment.description }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ assignment.due_date }}</td>
+                    <td>
+                        {% if submissions_dict.get(assignment.id) %}
+                        <span class="status-submitted">✓ Submitted</span>
+                        {% else %}
+                        <span class="status-not-submitted">Not Submitted</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if submissions_dict.get(assignment.id) and submissions_dict.get(assignment.id).grade %}
+                        <span class="grade-score">{{ submissions_dict.get(assignment.id).grade }}</span>
+                        {% elif submissions_dict.get(assignment.id) %}
+                        <span class="grade-pending">Pending</span>
+                        {% else %}
+                        <span class="grade-none">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if current_user.role == 'student' %}
+    <div class="grade-summary">
+        {% set total_graded = submissions_dict.values()|selectattr('grade', 'defined')|list|length %}
+        {% set total_assignments = assignments|length %}
+        <p><strong>Graded:</strong> {{ total_graded }} / {{ total_assignments }} assignments</p>
+        
+        {% if total_graded > 0 %}
+        {% set sum_grades = submissions_dict.values()|selectattr('grade', 'defined')|map(attribute='grade')|sum %}
+        {% set avg_grade = (sum_grades / total_graded)|round(2) %}
+        <p><strong>Average Grade:</strong> {{ avg_grade }}%</p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <p>No assignments found for this course.</p>
+    {% endif %}
+    
+    <a href="{{ url_for('main.grades') }}" class="btn">Back to Grades</a>
+</div>
+
+<style>
+.grades-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.course-info {
+    color: #666;
+    margin: 5px 0;
+}
+
+.grades-table-container {
+    margin: 30px 0;
+    overflow-x: auto;
+}
+
+.grades-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.grades-table th {
+    background: #4CAF50;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.grades-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.grades-table tr:hover {
+    background: #f5f5f5;
+}
+
+.assignment-desc {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.status-submitted {
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+.status-not-submitted {
+    color: #ff9800;
+}
+
+.grade-score {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #2196F3;
+}
+
+.grade-pending {
+    color: #ff9800;
+    font-style: italic;
+}
+
+.grade-none {
+    color: #999;
+}
+
+.grade-summary {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.grade-summary p {
+    margin: 10px 0;
+    font-size: 1.1em;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.btn:hover {
+    background: #45a049;
+}
+</style>
+
+{% endblock %}

@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, flash, redirect, url_for, current_
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import os
-from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm, SubmitAssignmentForm, ComposeMessageForm, AnnouncementForm, AssignTAForm
+from ..forms import CreateAssignmentForm, CreateCourseForm, EnrollStudentForm, SubmitAssignmentForm, ComposeMessageForm, AnnouncementForm, AssignTAForm, GradeSubmissionForm
 from ..models import db, Assignment, Course, User, Enrollment, Submission, Message, Announcement, TAAssignment
 
 bp = Blueprint("main", __name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
@@ -35,7 +35,42 @@ def index():
 @bp.route("/grades")
 @login_required
 def grades():
-    return render_template("main/grades.html")
+    if current_user.role == "instructor":
+        # Show courses taught by this instructor
+        courses = Course.query.filter_by(teacher=current_user.id).all()
+        course_averages = {}
+    elif current_user.role == "student":
+        # Show courses enrolled by this student
+        enrollments = Enrollment.query.filter_by(student_id=current_user.id).all()
+        courses = [e.course for e in enrollments]
+        
+        # Calculate average grade for each course
+        course_averages = {}
+        for course in courses:
+            # Get all assignments for this course
+            assignments = Assignment.query.filter_by(course_id=course.id).all()
+            assignment_ids = [a.id for a in assignments]
+            
+            # Get student's graded submissions for this course
+            graded_submissions = Submission.query.filter(
+                Submission.student_id == current_user.id,
+                Submission.assignment_id.in_(assignment_ids),
+                Submission.grade.isnot(None)
+            ).all()
+            
+            if graded_submissions:
+                total = sum(sub.grade for sub in graded_submissions)
+                average = round(total / len(graded_submissions), 1)
+                course_averages[course.id] = average
+            else:
+                course_averages[course.id] = None
+    else:  # TA
+        # Show courses the TA is assigned to
+        ta_assignments = TAAssignment.query.filter_by(ta_id=current_user.id).all()
+        courses = [ta_assignment.course for ta_assignment in ta_assignments]
+        course_averages = {}
+    
+    return render_template("main/grades.html", courses=courses, course_averages=course_averages)
 
 @bp.route("/classes")
 @login_required
@@ -99,21 +134,6 @@ def assignments():
             submission_status[assignment.id] = existing_submission is not None
     
     return render_template("main/assignments.html", assignments=assignments, sort=sort, order=order, submission_status=submission_status)
-    if current_user.role == 'student':
-        # Get course IDs the student is enrolled in
-        enrolled_course_ids = [enrollment.course_id for enrollment in current_user.courses_enrolled]
-        # Filter assignments to only those courses
-        assignments = Assignment.query.filter(Assignment.course_id.in_(enrolled_course_ids)).order_by(Assignment.due_date).all()
-    elif current_user.role == 'instructor':
-        # Instructors see assignments from courses they teach
-        taught_course_ids = [course.id for course in current_user.courses_taught]
-        assignments = Assignment.query.filter(Assignment.course_id.in_(taught_course_ids)).order_by(Assignment.due_date).all()
-    else:  # TA
-        # TAs see assignments from courses they are assigned to
-        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
-        assignments = Assignment.query.filter(Assignment.course_id.in_(ta_course_ids)).order_by(Assignment.due_date).all()
-    
-    return render_template("main/assignments.html", assignments=assignments)
 
 @bp.route("/create_assignment", methods=["GET", "POST"])
 @login_required
@@ -429,7 +449,47 @@ def view_submissions(assignment_id):
     # Get all submissions for this assignment with student info
     submissions = Submission.query.filter_by(assignment_id=assignment_id).all()
     
-    return render_template("main/view_submissions.html", assignment=assignment, submissions=submissions)
+    # Create a form instance for CSRF protection
+    form = GradeSubmissionForm()
+    
+    return render_template("main/view_submissions.html", assignment=assignment, submissions=submissions, form=form)
+
+@bp.route("/grade_submission/<int:submission_id>", methods=["GET", "POST"])
+@login_required
+def grade_submission(submission_id):
+    """Grade a student's submission (instructors and TAs only)"""
+    if current_user.role not in ["instructor", "ta"]:
+        flash("Access denied: instructors and TAs only.", "danger")
+        return redirect(url_for("main.assignments"))
+    
+    submission = Submission.query.get_or_404(submission_id)
+    assignment = submission.assignment
+    
+    # Verify teacher owns this assignment's course or TA is assigned to this course
+    if current_user.role == 'instructor':
+        if assignment.course.teacher != current_user.id:
+            flash("You can only grade submissions for your own courses.", "danger")
+            return redirect(url_for("main.assignments"))
+    else:  # TA
+        ta_course_ids = [ta_assignment.course_id for ta_assignment in current_user.ta_assignments]
+        if assignment.course_id not in ta_course_ids:
+            flash("You can only grade submissions for courses you are assigned to.", "danger")
+            return redirect(url_for("main.assignments"))
+    
+    if request.method == "POST":
+        grade = request.form.get("grade")
+        try:
+            grade_value = float(grade)
+            if 0 <= grade_value <= 100:
+                submission.grade = grade_value
+                db.session.commit()
+                flash(f"Grade {grade_value} saved for {submission.student.username}!", "success")
+            else:
+                flash("Grade must be between 0 and 100.", "danger")
+        except (ValueError, TypeError):
+            flash("Invalid grade value.", "danger")
+    
+    return redirect(url_for("main.view_submissions", assignment_id=assignment.id))
 
 # ============= MESSAGING & COMMUNICATION ROUTES =============
 
@@ -593,4 +653,21 @@ def create_announcement():
         return redirect(url_for("main.announcements"))
     
     return render_template("main/create_announcement.html", form=form)
+
+@bp.route("/<int:course_id>/grades")
+@login_required
+def view_course_grades(course_id):
+    course = Course.query.get_or_404(course_id)
+
+    # Get assignments for the course
+    assignments = Assignment.query.filter_by(course_id=course_id).all()
+    
+    # If student, get their submissions and grades
+    submissions_dict = {}
+    if current_user.role == 'student':
+        submissions = Submission.query.filter_by(student_id=current_user.id).all()
+        # Create a dictionary mapping assignment_id to submission
+        submissions_dict = {sub.assignment_id: sub for sub in submissions}
+    
+    return render_template("main/view_grades.html", course=course, assignments=assignments, submissions_dict=submissions_dict)
 

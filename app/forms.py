@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import EmailField, PasswordField, SubmitField, StringField, RadioField, SelectField, TextAreaField
+from wtforms import EmailField, PasswordField, SubmitField, StringField, RadioField, SelectField, TextAreaField, FloatField
 from wtforms.fields import DateField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError, NumberRange
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -65,3 +65,7 @@ class AssignTAForm(FlaskForm):
     ta_id = SelectField("Teaching Assistant", coerce=int, validators=[DataRequired()])
     course_id = SelectField("Course", coerce=int, validators=[DataRequired()])
     submit = SubmitField("Assign TA")
+
+class GradeSubmissionForm(FlaskForm):
+    grade = FloatField("Grade", validators=[DataRequired(), NumberRange(min=0, max=100, message="Grade must be between 0 and 100")])
+    submit = SubmitField("Save Grade")
