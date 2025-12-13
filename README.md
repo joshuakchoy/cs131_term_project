@@ -74,61 +74,18 @@ repo/
     auth/
       __init__.py
       routes.py
-      templates/
-        auth/
-          login.html
-          forgot_password.html
-          register.html
-          reset_password.html
+      templates/auth/login.html
     main/
       __init__.py
       routes.py
-      templates/
-        main/
-          analytics.html
-          announcements.html
-          assignments.html
-          classes.html
-          compose_message.html
-          create_announcment.html
-          create_assignment.html
-          create_course.html
-          default.html
-          grades.html
-          home.html
-          manage_tas.html
-          messages.html
-          submit_assignment.html
-          teacher_portal.html
-          view_course.html
-          view_message.html
-          view_submissions.html
-    templates/
-      base.html
-      messageBase.html
-      registerBase.html
-      sidebar.html
-      thumbnail.html
-    static/
-      styles.css
-      side.css
-      script.js
-      math.png
-      logo.jpg
-    tests/
-      conftest.py
-      test_forms.py
-      test_models.py
-      test_routes.py
-    homescreen.png
-    login.png
-    registration.png
-    screenshot.png
-    sketch.png
-    run.py
-    requirements.txt
-    README.md
-    .gitignore
+      templates/main/index.html
+      templates/main/feature.html
+    templates/base.html
+    static/styles.css
+  run.py
+  requirements.txt
+  README.md
+  .gitignore
 ```
 
 ## Acceptance Checklist
@@ -196,6 +153,118 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 
 ## Test Results
 ✅ **All 8 tests passing**
+
+## Technologies Used
+
+- **Backend**: Flask 3.0+, Python
+- **Database**: SQLAlchemy 2.0+ with SQLite
+- **Authentication**: Flask-Login 0.6+
+- **Forms**: WTForms 3.1+, Flask-WTF 1.2+
+- **Testing**: Pytest 7.4+, pytest-flask, pytest-cov
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Icons**: Google Material Symbols
+- **File Uploads**: Secure file handling with werkzeug
+
+## Database Models
+
+### User
+- Username, email, password (hashed)
+- Role: student, instructor, or TA
+- Relationships: courses taught, courses enrolled, submissions, TA assignments, messages
+
+### Course
+- Title, description, course code
+- Instructor (foreign key to User)
+- Relationships: assignments, enrollments, announcements, TA assignments
+
+### Assignment
+- Title, description, due date
+- Course (foreign key)
+- Relationships: submissions
+
+### Submission
+- Student, assignment references
+- Content (text), file path
+- Submission timestamp, grade
+
+### Enrollment
+- Links students to courses
+
+### Message
+- Sender, recipient references
+- Subject, body, timestamp
+- Read/unread status
+
+### Announcement
+- Course, author references
+- Title, content, timestamp
+
+### TAAssignment
+- Links TAs to courses they assist with
+
+## Features Implemented
+
+### Authentication & User Management
+- ✅ User registration with role selection (Student, Instructor, TA)
+- ✅ Login/logout functionality
+- ✅ Password hashing and secure authentication
+- ✅ Password reset functionality
+- ✅ Role-based access control
+
+### Course Management
+- ✅ Instructors can create courses
+- ✅ Students can enroll in courses
+- ✅ Course listing and details view
+- ✅ Course thumbnails and descriptions
+- ✅ TA assignment to courses
+- ✅ Enrollment management through teacher portal
+
+### Assignment System
+- ✅ Instructors can create assignments with due dates
+- ✅ Students can view assignments for enrolled courses
+- ✅ Students can submit assignments (text + file upload)
+- ✅ Assignment resubmission capability
+- ✅ Submission tracking and status indicators
+- ✅ File uploads (PDF, DOC, DOCX, TXT, ZIP, code files)
+- ✅ Instructors can view all submissions per assignment
+- ✅ Assignment sorting (by due date, by course)
+- ✅ Completion badges for submitted assignments
+- ✅ Download submitted files
+
+### Messaging & Communication
+- ✅ Direct messaging between users
+- ✅ Inbox and sent messages
+- ✅ Message composition with subject and body
+- ✅ Read/unread status tracking
+- ✅ Floating messaging hub (overlay interface)
+- ✅ Course-wide announcements by instructors
+- ✅ Message notifications
+
+### Grading
+- ✅ Instructors can view student submissions
+- ✅ Grade tracking per assignment
+- ✅ Grades page showing all course grades by student
+
+### User Interface
+- ✅ Responsive sidebar navigation with Material Design icons
+- ✅ Collapsible sidebar with state persistence
+- ✅ Modal dialogs for course management
+- ✅ Flash messages for user feedback
+- ✅ Custom styling with CSS
+- ✅ Floating message button overlay
+- ✅ Clickable assignment cards
+- ✅ Visual completion indicators
+
+### Teacher Portal
+- ✅ Dashboard for instructors
+- ✅ Course overview with enrollment statistics
+- ✅ Student enrollment management via modal interface
+- ✅ Quick access to create assignments/courses
+- ✅ View all courses taught
+- ✅ Manage students in courses
+
+### Analytics
+- ✅ Analytics page structure (ready for future metrics)
 
 ## Login Page
 

@@ -46,11 +46,11 @@ block content %}
 
         <div class="form-field">
           <label>{{ form.role.label.text }}</label>
-          <div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
             {% for radio_field in form.role %}
-            <label style="margin-right: 12px"
-              >{{ radio_field() }} {{ radio_field.label }}</label
-            >
+            <label style="display: flex; align-items: center; gap: 6px;">
+              {{ radio_field() }} {{ radio_field.label }} 
+            </label>
             {% endfor %}
           </div>
           {% for err in form.role.errors %}
