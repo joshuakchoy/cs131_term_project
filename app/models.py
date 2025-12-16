@@ -82,6 +82,7 @@ class Assignment(db.Model):
     title = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=True)
     due_date = db.Column(db.String(64), nullable=False)
+    assignment_type = db.Column(db.String(32), nullable=False, default='homework')
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
 
     # relationships

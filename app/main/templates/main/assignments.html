@@ -50,6 +50,9 @@ content %}
         <p class="assignment-desc">{{ a.description }}</p>
         {% endif %}
         <div class="assignment-meta">
+          {% if a.assignment_type %}
+          <span class="meta-pill">Type: {{ a.assignment_type|capitalize }}</span>
+          {% endif %}
           {% if a.course %}
           <span class="meta-pill">Course: {{ a.course.title }}</span>
           {% else %}

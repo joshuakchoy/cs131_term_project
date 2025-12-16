@@ -27,6 +27,13 @@ block content %}
     {% endfor %}
   </p>
   <p>
+    {{ form.assignment_type.label }}<br />
+    {{ form.assignment_type() }}<br />
+    {% for error in form.assignment_type.errors %}
+    <span style="color: red">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
     {{ form.course_id.label }}<br />
     {{ form.course_id() }}<br />
     {% for error in form.course_id.errors %}

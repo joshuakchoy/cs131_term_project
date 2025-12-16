@@ -164,6 +164,7 @@ def create_assignment():
             title=form.title.data,
             description=form.description.data,
             due_date=due_str,
+            assignment_type=form.assignment_type.data,
             course_id=form.course_id.data
         )
         db.session.add(assignment)

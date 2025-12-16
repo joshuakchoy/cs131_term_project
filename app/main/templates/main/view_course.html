@@ -42,6 +42,9 @@ block content %}
             <p class="assignment-desc">{{ assignment.description }}</p>
             {% endif %}
             <div class="assignment-meta">
+              {% if assignment.assignment_type %}
+              <span class="meta-pill">Type: {{ assignment.assignment_type|capitalize }}</span>
+              {% endif %}
               {% if assignment.course %}
               <span class="meta-pill"
                 >Course: {{ assignment.course.title }}</span

@@ -14,6 +14,7 @@
             <thead>
                 <tr>
                     <th>Assignment</th>
+                    <th>Type</th>
                     <th>Due Date</th>
                     <th>Status</th>
                     <th>Grade</th>
@@ -28,6 +29,7 @@
                         <br><span class="assignment-desc">{{ assignment.description }}</span>
                         {% endif %}
                     </td>
+                    <td>{{ assignment.assignment_type|capitalize if assignment.assignment_type else '—' }}</td>
                     <td>{{ assignment.due_date }}</td>
                     <td>
                         {% if submissions_dict.get(assignment.id) %}

@@ -31,6 +31,7 @@ class CreateAssignmentForm(FlaskForm):
     title = StringField("Assignment Title", validators=[DataRequired(), Length(max=128)])
     description = StringField("Description", validators=[DataRequired(), Length(max=512)])
     due_date = DateField("Due Date", format="%Y-%m-%d", validators=[DataRequired()])
+    assignment_type = SelectField("Type", choices=[('homework', 'Homework'), ('quiz', 'Quiz'), ('exam', 'Exam')], validators=[DataRequired()])
     course_id = SelectField("Course", coerce=int, validators=[DataRequired()])
     submit = SubmitField("Create Assignment")
 

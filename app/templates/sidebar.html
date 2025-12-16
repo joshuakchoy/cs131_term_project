@@ -45,6 +45,8 @@
             <span class="nav-tooltip">Grades</span>
           </li>
           {% endif %}
+          {% if current_user.is_authenticated and current_user.role ==
+          'instructor' %}
           <li class="nav-item">
             <a href="/analytics" class="nav-link">
               <span class="material-symbols-rounded">chart_data</span>
@@ -52,6 +54,7 @@
             </a>
             <span class="nav-tooltip">Analytics</span>
           </li>
+          {% endif %}
           <li class="nav-item">
             <a href="{{ url_for('main.announcements') }}" class="nav-link">
               <span class="material-symbols-rounded">campaign</span>
