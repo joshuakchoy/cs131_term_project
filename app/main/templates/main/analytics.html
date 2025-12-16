@@ -4,5 +4,75 @@
 
 {% block content %}
     <h1>Analytics</h1>
-    <p>These are your analytics.</p>
+    {% if gpa is not none %}
+    <p><strong>GPA:</strong> {{ gpa }}</p>
+    {% else %}
+    <p><em>GPA: N/A (no graded submissions yet)</em></p>
+    {% endif %}
+
+    {% if assignments_data and assignments_data|length > 0 %}
+    <div>
+        {% for ad in assignments_data %}
+        <div style="margin-bottom: 24px;">
+            <h3>{{ ad.assignment_title }} <span class="muted">({{ ad.course_title }})</span></h3>
+            <div style="display:flex; gap: 16px; align-items:center;">
+                <div>
+                    <canvas id="chart-{{ ad.assignment_id }}" width="480" height="240"></canvas>
+                </div>
+                <div>
+                    <div><strong>Highest:</strong> {{ ad.high if ad.high is not none else '—' }}</div>
+                    <div><strong>Lowest:</strong> {{ ad.low if ad.low is not none else '—' }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No assignments found for analytics.</p>
+    {% endif %}
+
+    <!-- For analytics, we chose to use Chart.js, which uses some Javascript to create animated graphs-->
+    <!-- We followed Chart.js documentation and a YT video: https://www.youtube.com/watch?v=PKXYUtOs3RE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+    const analyticsData = {{ assignments_data | tojson }};
+    analyticsData.forEach(ad => {
+        const ctx = document.getElementById(`chart-${ad.assignment_id}`);
+        if (!ctx) return;
+        const labels = ['Student', 'Class Avg'];
+        const dataPoints = [ad.student_score ?? null, ad.class_avg ?? null];
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: `${ad.assignment_title}`,
+                    data: dataPoints,
+                    backgroundColor: ['#4CAF50', '#2196F3'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Score (%)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y ?? 'N/A'}%`
+                        }
+                    }
+                }
+            }
+        });
+    });
+    </script>
 {% endblock %}

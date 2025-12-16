@@ -206,7 +206,74 @@ def create_course():
 @bp.route("/analytics")
 @login_required
 def analytics():
-    return render_template("main/analytics.html")
+    # Only students see personal analytics; others see a simple page
+    if getattr(current_user, "role", None) != "student":
+        return render_template("main/analytics.html", assignments_data=[], gpa=None)
+
+    # Get courses the student is enrolled in
+    enrollments = Enrollment.query.filter_by(student_id=current_user.id).all()
+    course_ids = [e.course_id for e in enrollments]
+    courses = Course.query.filter(Course.id.in_(course_ids)).all() if course_ids else []
+
+    assignments_data = []
+
+    # Collect assignment-level analytics
+    for course in courses:
+        course_assignments = Assignment.query.filter_by(course_id=course.id).all()
+        for assignment in course_assignments:
+            subs = Submission.query.filter_by(assignment_id=assignment.id).all()
+            grades = [s.grade for s in subs if s.grade is not None]
+
+            # Student performance for this assignment
+            stu_sub = next((s for s in subs if s.student_id == current_user.id), None)
+            student_score = stu_sub.grade if (stu_sub and stu_sub.grade is not None) else None
+
+            class_avg = round(sum(grades) / len(grades), 2) if grades else None
+            high = max(grades) if grades else None
+            low = min(grades) if grades else None
+
+            assignments_data.append({
+                "assignment_id": assignment.id,
+                "assignment_title": assignment.title,
+                "course_title": course.title,
+                "student_score": student_score,
+                "class_avg": class_avg,
+                "high": high,
+                "low": low,
+            })
+
+    # Compute GPA from all courses the student is enrolled in
+    # Approach: average student's graded percentages per course -> map to 4.0 scale -> average
+    def pct_to_gpa(pct):
+        if pct is None:
+            return None
+        if pct >= 90:
+            return 4.0
+        if pct >= 80:
+            return 3.0
+        if pct >= 70:
+            return 2.0
+        if pct >= 60:
+            return 1.0
+        return 0.0
+
+    course_gp_list = []
+    for course in courses:
+        course_assignment_ids = [a.id for a in Assignment.query.filter_by(course_id=course.id).all()]
+        if not course_assignment_ids:
+            continue
+        stu_subs = Submission.query.filter(Submission.assignment_id.in_(course_assignment_ids), Submission.student_id == current_user.id).all()
+        stu_grades = [s.grade for s in stu_subs if s.grade is not None]
+        if not stu_grades:
+            continue
+        avg_pct = sum(stu_grades) / len(stu_grades)
+        gp = pct_to_gpa(avg_pct)
+        if gp is not None:
+            course_gp_list.append(gp)
+
+    gpa = round(sum(course_gp_list) / len(course_gp_list), 2) if course_gp_list else None
+
+    return render_template("main/analytics.html", assignments_data=assignments_data, gpa=gpa)
 
 
 @bp.route("/teacher_portal")
