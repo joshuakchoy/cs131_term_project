@@ -54,15 +54,29 @@ The project includes a comprehensive test suite with **70 tests** covering unit 
 
 Before running tests for the first time, ensure your environment is properly configured:
 
+**Windows:**
+
+```powershell
+# 1. Make sure you're in the project directory
+cd cs131_term_project
+
+# 2. Activate your virtual environment
+.\.venv\Scripts\Activate.ps1
+
+# 3. Install testing dependencies (if not already installed)
+pip install -r requirements.txt
+
+# 4. Verify pytest is installed
+pytest --version
+```
+
+**Mac/Linux:**
+
 ```bash
 # 1. Make sure you're in the project directory
 cd cs131_term_project
 
 # 2. Activate your virtual environment
-# Windows:
-.venv\Scripts\activate
-
-# Mac/Linux:
 source .venv/bin/activate
 
 # 3. Install testing dependencies (if not already installed)
@@ -73,6 +87,34 @@ pytest --version
 ```
 
 ### Quick Start - Run All Tests
+
+**Windows (with virtual environment activated):**
+
+```powershell
+# Run all tests with verbose output
+pytest tests/ -v
+
+# Run all tests with summary
+pytest tests/ -v --tb=short
+
+# Run all tests quietly (just see pass/fail count)
+pytest tests/ -q
+```
+
+**Windows (without activating virtual environment):**
+
+```powershell
+# Run all tests with verbose output
+.\.venv\Scripts\python.exe -m pytest tests/ -v
+
+# Run all tests with summary
+.\.venv\Scripts\python.exe -m pytest tests/ -v --tb=short
+
+# Run all tests quietly (just see pass/fail count)
+.\.venv\Scripts\python.exe -m pytest tests/ -q
+```
+
+**Mac/Linux (with virtual environment activated):**
 
 ```bash
 # Run all tests with verbose output
@@ -85,7 +127,25 @@ pytest tests/ -v --tb=short
 pytest tests/ -q
 ```
 
+**Mac/Linux (without activating virtual environment):**
+
+```bash
+# Run all tests with verbose output
+.venv/bin/python -m pytest tests/ -v
+
+# Run all tests with summary
+.venv/bin/python -m pytest tests/ -v --tb=short
+
+# Run all tests quietly (just see pass/fail count)
+.venv/bin/python -m pytest tests/ -q
+```
+
 ### Run Specific Test Categories
+
+> **Note:** The commands below assume your virtual environment is activated. If not, use the full path to Python:
+>
+> - Windows: `.\.venv\Scripts\python.exe -m pytest ...`
+> - Mac/Linux: `.venv/bin/python -m pytest ...`
 
 #### Unit Tests (Models & Forms)
 
