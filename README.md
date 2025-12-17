@@ -1,4 +1,5 @@
 # cs131_term_project
+
 Learning Management System for CS131 term project
 
 A full-featured learning management system with user authentication, course management, assignment submission, messaging, and grading capabilities.
@@ -6,12 +7,14 @@ A full-featured learning management system with user authentication, course mana
 ## Setup Instructions
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/joshuakchoy/cs131_term_project.git
 cd cs131_term_project
 ```
 
 ### 2. Create Virtual Environment
+
 ```bash
 python -m venv .venv
 
@@ -23,11 +26,13 @@ source .venv/bin/activate
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Run the Application
+
 ```bash
 # Option A
 python run.py
@@ -38,16 +43,37 @@ flask run
 ```
 
 ### 5. Access the Application
+
 Visit `http://localhost:5000/` in your browser
 
 ## Testing
 
+### Prerequisites
+
+Make sure your virtual environment is activated before running tests:
+
+```bash
+# Windows
+.venv\Scripts\activate
+
+# Mac/Linux
+source .venv/bin/activate
+```
+
 ### Run All Tests
+
 ```bash
 pytest tests/ -v
 ```
 
+or simply:
+
+```bash
+pytest -v
+```
+
 ### Run Specific Test Files
+
 ```bash
 pytest tests/test_models.py -v
 pytest tests/test_routes.py -v
@@ -55,12 +81,16 @@ pytest tests/test_forms.py -v
 ```
 
 ### Test Coverage
+
 The test suite includes 8 unit tests covering:
+
 - **Models**: User authentication, course creation
 - **Routes**: Login, protected routes, authentication
 - **Forms**: Registration validation
 
 All tests must pass before merging to main branch.
+
+**Note**: The project includes a `pytest.ini` configuration file that automatically sets the Python path, allowing pytest to locate the `app` module from the project root directory.
 
 ## Project Structure
 
@@ -141,7 +171,8 @@ repo/
 - Base template includes a nav and `{% block content %}`; child templates extend it.
 - README includes install/run and a screenshot of a rendered page.
 
-## MVP Features (to be implemented) 
+## MVP Features (to be implemented)
+
 - Instructor can create assignments.
 - Instructor or TA can grade assignments.
 - Students can access assignments.
@@ -158,17 +189,20 @@ repo/
 ## Test Coverage
 
 ### Models (3 tests)
+
 1. **test_user_password_hashing** - Verifies password hashing and verification works correctly
 2. **test_user_creation_with_role** - Tests creating users with different roles (student, instructor)
 3. **test_course_creation** - Tests course creation and instructor relationship
 
 ### Routes (4 tests)
+
 4. **test_login_page_accessible** - Verifies login page loads successfully
 5. **test_login_with_valid_credentials** - Tests successful login with correct credentials
 6. **test_assignments_requires_login** - Ensures protected routes require authentication
 7. **test_authenticated_user_can_access_assignments** - Verifies authenticated users can access assignments
 
 ### Forms (1 test)
+
 8. **test_registration_form_validates_matching_passwords** - Tests form validation for matching passwords
 
 ## Running Tests
@@ -188,6 +222,7 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 ```
 
 ## Test Files
+
 - `conftest.py` - Pytest configuration and fixtures
 - `test_models.py` - Model tests
 - `test_routes.py` - Route/view tests
@@ -195,6 +230,7 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 - `pytest.ini` - Pytest configuration
 
 ## Test Results
+
 ✅ **All 8 tests passing**
 
 ## Login Page
@@ -202,16 +238,19 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 ![Rendered page](registration.png)
 
 ## Student Page Sample
-![Rendered page](homescreen.png)
-- Easy access to messages and tabs via sidebar
 
+![Rendered page](homescreen.png)
+
+- Easy access to messages and tabs via sidebar
 
 ## UI Sketches
 
 ![Rendered page](sketch.png)
+
 ## User Roles
 
 ### Instructor
+
 - Create and manage courses
 - Create and grade assignments
 - View all student submissions
@@ -220,6 +259,7 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 - Send messages to students and TAs
 
 ### Student
+
 - Enroll in courses
 - View and submit assignments
 - Track grades across all courses
@@ -228,6 +268,7 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 - View assignment completion status
 
 ### Teaching Assistant (TA)
+
 - Assist with grading assignments
 - Access course materials
 - Communicate with students
@@ -238,5 +279,3 @@ pytest tests/test_models.py::TestUserModel::test_user_password_hashing
 - **Backend & Models**: Joshua Choy
 - **Frontend & Styling**: Jan David Ella
 - **Testing & QA**: Jan David Ella, Joshua Choy
-
-
