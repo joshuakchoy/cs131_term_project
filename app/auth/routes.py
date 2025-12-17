@@ -6,12 +6,12 @@ import os
 
 bp = Blueprint("auth", __name__, url_prefix="/auth", template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
-@bp.route("/login", methods=["GET", "POST"])
+@bp.route("/login", methods=["GET", "POST"]) #login route
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     
-    form = LoginForm()
+    form = LoginForm() # Login form instance
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
@@ -22,11 +22,11 @@ def login():
     return render_template("auth/login.html", form=form)
 
 @bp.route("/register", methods=["GET", "POST"])
-def register():
+def register(): #registration route
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     
-    form = RegistrationForm()
+    form = RegistrationForm() # Registration form instance
     if form.validate_on_submit():
         # Check for existing user
         if User.query.filter_by(email=form.email.data).first():
@@ -46,9 +46,9 @@ def register():
         return redirect(url_for("main.index"))
     return render_template("auth/register.html", form=form)
 
-@bp.route("/logout")
+@bp.route("/logout") #logout route
 @login_required
-def logout():
+def logout(): 
     logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for("auth.login"))
@@ -58,24 +58,24 @@ def forgot_password():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     
-    form = ForgotPasswordForm()
+    form = ForgotPasswordForm() # Forgot password form instance
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             token = user.get_reset_token()
             reset_url = url_for("auth.reset_password", token=token, _external=True)
             # TODO: Send email with reset link
-            flash(f"Password reset link: {reset_url}", "info")
+            flash(f"Password reset link: {reset_url}", "info") # Instead of sending email, the site flashes the recovery link
         else:
             flash("Email not found.", "danger")
     return render_template("auth/forgot_password.html", form=form)
 
-@bp.route("/reset-password/<token>", methods=["GET", "POST"])
+@bp.route("/reset-password/<token>", methods=["GET", "POST"])  
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for("auth.login"))
     
-    user = User.verify_reset_token(token)
+    user = User.verify_reset_token(token)  # Verify the reset token
     if not user:
         flash("Invalid or expired token.", "danger")
         return redirect(url_for("auth.login"))

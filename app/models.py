@@ -130,7 +130,7 @@ class Message(db.Model):
     subject = db.Column(db.String(128), nullable=False)
     body = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    read = db.Column(db.Boolean, default=False)
+    read = db.Column(db.Boolean, default=False) # Whether the message has been read
     
     # relationships
     sender = db.relationship('User', foreign_keys=[sender_id], backref='messages_sent')
