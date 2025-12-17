@@ -393,7 +393,6 @@ cs131_term_project/
       sidebar.html
       messageBase.html
       registerBase.html
-      thumbnail.html
     static/
       styles.css
       side.css
