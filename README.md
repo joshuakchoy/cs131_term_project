@@ -50,6 +50,8 @@ Visit `http://localhost:5000/` in your browser
 
 The project includes a comprehensive test suite with **70 tests** covering unit tests, route tests, and full integration tests.
 
+> **Important:** The project includes a `pytest.ini` file that configures pytest to find the `app` module. This file must be present in the project root for tests to run properly.
+
 ### Initial Setup for Testing
 
 Before running tests for the first time, ensure your environment is properly configured:
@@ -351,6 +353,16 @@ pytest tests/ -n 4  # Run with 4 workers
 ```bash
 # Solution: Install dependencies
 pip install -r requirements.txt
+```
+
+**Problem: "ModuleNotFoundError: No module named 'app'"**
+
+```bash
+# Solution: The pytest.ini file should handle this automatically.
+# If missing, create pytest.ini in the project root with:
+[pytest]
+pythonpath = .
+testpaths = tests
 ```
 
 **Problem: Tests fail with database errors**
