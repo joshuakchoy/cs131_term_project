@@ -14,6 +14,15 @@
   {% if existing_submission.file_path %}
   <br><strong>File:</strong> {{ existing_submission.file_path }}
   {% endif %}
+  {% if existing_submission.grade is not none %}
+  <br><strong>Grade:</strong> {{ existing_submission.grade }}
+  {% endif %}
+  {% if existing_submission.feedback %}
+  <br><strong>Teacher Feedback:</strong>
+  <div style="background: #f9f9f9; padding: 10px; margin-top: 5px; border-radius: 4px;">
+    {{ existing_submission.feedback }}
+  </div>
+  {% endif %}
 </div>
 {% endif %}
 

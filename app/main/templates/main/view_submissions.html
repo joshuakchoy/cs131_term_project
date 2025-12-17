@@ -46,13 +46,29 @@
             <p><em>Not graded yet</em></p>
             {% endif %}
             
-            <form method="POST" action="{{ url_for('main.grade_submission', submission_id=submission.id) }}" style="display: inline-block; margin-top: 10px;">
+            {% if submission.feedback %}
+            <div class="feedback-display">
+                <strong>Teacher Feedback:</strong>
+                <p>{{ submission.feedback }}</p>
+            </div>
+            {% endif %}
+            
+            <form method="POST" action="{{ url_for('main.grade_submission', submission_id=submission.id) }}" style="margin-top: 10px;">
                 {{ form.hidden_tag() }}
-                <input type="number" name="grade" step="0.01" min="0" max="100" 
-                       value="{{ submission.grade if submission.grade else '' }}" 
-                       placeholder="Enter grade (0-100)" required
-                       style="padding: 5px; width: 150px;">
-                <button type="submit" class="btn" style="padding: 5px 15px;">Save Grade</button>
+                <div style="margin-bottom: 10px;">
+                    <label><strong>Grade (0-100):</strong></label><br>
+                    <input type="number" name="grade" step="0.01" min="0" max="100" 
+                           value="{{ submission.grade if submission.grade else '' }}" 
+                           placeholder="Enter grade (0-100)" required
+                           style="padding: 5px; width: 150px;">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label><strong>Feedback (optional):</strong></label><br>
+                    <textarea name="feedback" rows="3" cols="50" 
+                              placeholder="Enter feedback for the student..."
+                              style="padding: 5px;">{{ submission.feedback if submission.feedback else '' }}</textarea>
+                </div>
+                <button type="submit" class="btn" style="padding: 5px 15px;">Save Grade & Feedback</button>
             </form>
         </div>
     </div>

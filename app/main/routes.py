@@ -562,10 +562,12 @@ def grade_submission(submission_id):
     
     if request.method == "POST":
         grade = request.form.get("grade")
+        feedback = request.form.get("feedback")
         try:
             grade_value = float(grade)
             if 0 <= grade_value <= 100:
                 submission.grade = grade_value
+                submission.feedback = feedback if feedback else None
                 db.session.commit()
                 flash(f"Grade {grade_value} saved for {submission.student.username}!", "success")
             else:

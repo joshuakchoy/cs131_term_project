@@ -18,6 +18,7 @@
                     <th>Due Date</th>
                     <th>Status</th>
                     <th>Grade</th>
+                    <th>Feedback</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,6 +44,13 @@
                         <span class="grade-score">{{ submissions_dict.get(assignment.id).grade }}</span>
                         {% elif submissions_dict.get(assignment.id) %}
                         <span class="grade-pending">Pending</span>
+                        {% else %}
+                        <span class="grade-none">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if submissions_dict.get(assignment.id) and submissions_dict.get(assignment.id).feedback %}
+                        <div class="feedback-cell">{{ submissions_dict.get(assignment.id).feedback }}</div>
                         {% else %}
                         <span class="grade-none">—</span>
                         {% endif %}

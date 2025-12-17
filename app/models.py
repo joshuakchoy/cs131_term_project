@@ -100,6 +100,7 @@ class Submission(db.Model):
     file_path = db.Column(db.String(255), nullable=True)  # Path to uploaded file
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
     grade = db.Column(db.Float, nullable=True)
+    feedback = db.Column(db.Text, nullable=True)  # Teacher feedback
 
     # relationships
     assignment = db.relationship('Assignment', back_populates='submissions')

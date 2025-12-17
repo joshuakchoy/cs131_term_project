@@ -70,4 +70,5 @@ class AssignTAForm(FlaskForm):
 
 class GradeSubmissionForm(FlaskForm):
     grade = FloatField("Grade", validators=[DataRequired(), NumberRange(min=0, max=100, message="Grade must be between 0 and 100")])
+    feedback = TextAreaField("Feedback (optional)")
     submit = SubmitField("Save Grade")
