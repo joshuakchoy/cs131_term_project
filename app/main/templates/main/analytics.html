@@ -36,37 +36,46 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
+    // Convert Python data to JavaScript - assignments_data contains all assignment analytics
     const analyticsData = {{ assignments_data | tojson }};
+    
+    // Loop through each assignment and create a chart for it
     analyticsData.forEach(ad => {
-        const ctx = document.getElementById(`chart-${ad.assignment_id}`);
-        if (!ctx) return;
+        const ctx = document.getElementById(`chart-${ad.assignment_id}`); // Canvas context for Chart.js
+        if (!ctx) return; // Skip if canvas not found
+        
+        // Define x-axis labels
         const labels = ['Student', 'Class Avg'];
-        const dataPoints = [ad.student_score ?? null, ad.class_avg ?? null];
+        
+        // Define data points: student score and class average
+        const dataPoints = [ad.student_score ?? null, ad.class_avg ?? null]; 
 
         new Chart(ctx, {
-            type: 'bar',
+            type: 'bar', // Chart type: bar graph
             data: {
-                labels,
+                labels, 
                 datasets: [{
-                    label: `${ad.assignment_title}`,
-                    data: dataPoints,
-                    backgroundColor: ['#4CAF50', '#2196F3'],
-                    borderRadius: 4
+                    label: `${ad.assignment_title}`, // Dataset label (assignment name)
+                    data: dataPoints, // Y-axis values [student score, class avg]
+                    backgroundColor: ['#4CAF50', '#2196F3'], // Green for student, blue for class avg
+                    borderRadius: 4 // Rounded corners on bars
                 }]
             },
             options: {
-                responsive: true,
+                responsive: true, // Auto-resize chart on window resize
                 scales: {
                     y: {
-                        beginAtZero: true,
-                        max: 100,
-                        title: { display: true, text: 'Score (%)' }
+                        beginAtZero: true, // Y-axis starts at 0
+                        max: 100, // Maximum score is 100%
+                        title: { display: true, text: 'Score (%)' } // Y-axis label
                     }
                 },
                 plugins: {
-                    legend: { display: false },
+                    legend: { display: false }, // disable hiding legend
                     tooltip: {
                         callbacks: {
+                            // Customize tooltip text when hovering over bars
+                            // ctx = tooltip context with dataset info
                             label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y ?? 'N/A'}%`
                         }
                     }

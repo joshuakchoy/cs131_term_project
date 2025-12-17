@@ -50,6 +50,28 @@ Visit `http://localhost:5000/` in your browser
 
 The project includes a comprehensive test suite with **70 tests** covering unit tests, route tests, and full integration tests.
 
+### Initial Setup for Testing
+
+Before running tests for the first time, ensure your environment is properly configured:
+
+```bash
+# 1. Make sure you're in the project directory
+cd cs131_term_project
+
+# 2. Activate your virtual environment
+# Windows:
+.venv\Scripts\activate
+
+# Mac/Linux:
+source .venv/bin/activate
+
+# 3. Install testing dependencies (if not already installed)
+pip install -r requirements.txt
+
+# 4. Verify pytest is installed
+pytest --version
+```
+
 ### Quick Start - Run All Tests
 
 ```bash
@@ -211,6 +233,82 @@ pytest tests/ -v --tb=line
 pytest tests/ -v --tb=no
 ```
 
+### How Tests Work
+
+The test suite uses **pytest** with Flask-specific testing utilities:
+
+1. **Test Database**: Each test uses a temporary SQLite database that is:
+
+   - Created fresh before each test
+   - Populated with test data via fixtures
+   - Completely destroyed after the test completes
+   - Never affects your production `app.db`
+
+2. **Test Client**: Simulates browser requests without running the server:
+
+   - `client.get('/route')` - Simulates visiting a page
+   - `client.post('/route', data={...})` - Simulates form submission
+   - `follow_redirects=True` - Follows redirect responses
+
+3. **Fixtures**: Pre-configured test data (defined in `conftest.py`):
+
+   - `app` - Test Flask application
+   - `client` - Test request client
+   - `student_user`, `teacher_user`, `ta_user` - Test users
+   - `authenticated_client` - Pre-logged-in client
+   - `sample_course`, `sample_assignment` - Test data
+
+4. **Test Isolation**: Each test runs independently:
+   - No test affects another test
+   - Database reset between tests
+   - Session cleared between tests
+
+### Running Tests During Development
+
+```bash
+# Watch mode: re-run tests on file changes (requires pytest-watch)
+pip install pytest-watch
+ptw tests/
+
+# Run only failed tests from last run
+pytest --lf
+
+# Run failed tests first, then rest
+pytest --ff
+
+# Stop on first failure (useful for debugging)
+pytest -x
+
+# Run specific number of tests in parallel (requires pytest-xdist)
+pip install pytest-xdist
+pytest tests/ -n 4  # Run with 4 workers
+```
+
+### Troubleshooting Tests
+
+**Problem: Tests fail with "ModuleNotFoundError"**
+
+```bash
+# Solution: Install dependencies
+pip install -r requirements.txt
+```
+
+**Problem: Tests fail with database errors**
+
+```bash
+# Solution: Delete test database and re-run
+rm instance/test.db  # Mac/Linux
+del instance\test.db  # Windows
+pytest tests/ -v
+```
+
+**Problem: Want to see print statements in tests**
+
+```bash
+# Solution: Use -s flag to show print output
+pytest tests/ -v -s
+```
+
 ### Integration Test Features
 
 The integration tests use `client.get()` and `client.post()` to:
@@ -250,27 +348,77 @@ All tests must pass before merging to main branch.
 ## Project Structure
 
 ```
-repo/
+cs131_term_project/
   app/
-    __init__.py
+    __Init__.py
     config.py
     models.py
     forms.py
     auth/
       __init__.py
       routes.py
-      templates/auth/login.html
+      templates/
+        auth/
+          login.html
+          register.html
+          forgot_password.html
+          reset_password.html
     main/
       __init__.py
       routes.py
-      templates/main/index.html
-      templates/main/feature.html
-    templates/base.html
-    static/styles.css
+      templates/
+        main/
+          home.html
+          assignments.html
+          classes.html
+          grades.html
+          analytics.html
+          teacher_portal.html
+          create_course.html
+          create_assignment.html
+          submit_assignment.html
+          view_course.html
+          view_grades.html
+          view_submissions.html
+          messages.html
+          sent_messages.html
+          compose_message.html
+          view_message.html
+          announcements.html
+          create_announcement.html
+          manage_tas.html
+          default.html
+    templates/
+      base.html
+      sidebar.html
+      messageBase.html
+      registerBase.html
+      thumbnail.html
+    static/
+      styles.css
+      side.css
+      script.js
+      logo.jpg
+      math.png
+    analytics/
+    assignments/
+    classes/
+    grades/
+  tests/
+    conftest.py
+    test_models.py
+    test_routes.py
+    test_forms.py
+    test_integration.py
+  instance/
+    app.db (SQLite database, created on first run)
+  uploads/
+    (student submission files)
   run.py
   requirements.txt
   README.md
   .gitignore
+  *.png (UI screenshots)
 ```
 
 ## Acceptance Checklist
@@ -468,7 +616,47 @@ Run `pytest tests/ -v` to see detailed test results.
 
 ### Analytics
 
-- ✅ Analytics page structure (ready for future metrics)
+The analytics page provides visual performance insights for students using **Chart.js** interactive bar charts.
+
+#### Student Analytics Features
+
+**What Students See:**
+
+- Individual performance charts for each assignment in enrolled courses
+- Side-by-side comparison: Student score vs. Class average
+- GPA calculation based on all graded assignments
+- Performance tracking across all courses
+
+#### How the Charts Work
+
+**Chart Components:**
+
+- **Bar Chart**: Two bars per assignment
+  - 🟢 **Green Bar** = Your score on the assignment
+  - 🔵 **Blue Bar** = Class average for that assignment
+- **Y-Axis**: Score percentage (0-100%)
+- **Interactive Tooltips**: Hover over any bar to see exact score
+
+**Data Displayed:**
+
+```
+Assignment: "Homework 1"
+├── Your Score: 85%        (green bar)
+├── Class Average: 78%     (blue bar)
+├── Class High: 95%        (shown in card)
+└── Class Low: 62%         (shown in card)
+```
+
+**GPA Calculation:**
+
+1. Average calculated per course (all graded assignments)
+2. Percentage converted to 4.0 scale:
+   - 90-100% = 4.0
+   - 80-89% = 3.0
+   - 70-79% = 2.0
+   - 60-69% = 1.0
+   - Below 60% = 0.0
+3. Overall GPA = Average of all course GPAs
 
 ## Login Page
 
